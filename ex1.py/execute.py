@@ -25,8 +25,20 @@ element = WebDriverWait(driver, 10).until(
 EC.element_to_be_clickable((By.XPATH, "//*[@id='main']")))
 main = driver.find_element_by_xpath("//*[@id='main']")
 main.click()
-list = driver.find_element_by_class_name("aTreeMenu")
-lilist = list.find_elements_by_tag_name("li")
-print(len(lilist))
+#list = driver.find_element_by_class_name("aTreeMenu")
+element = WebDriverWait(driver, 10).until(
+EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li")))
+list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
+#lilist = list.find_elements_by_xpath("//li[@class='canNotCreate open notActiveNode']")
+#mainlist = lilist.find_elements_by_xpath("//li[@class='canNotCreate open notActiveNode']")
+#ullist = lilist.find_element_by_tag_name("ul")
+#sublilist = ullist.find_elements_by_tag_name("li")
+
+print(len(list), )
+for entry in list:
+   #atagitem = entry.find_element_by_tag("class")
+    print(entry.get_attribute("title"))
+   #if entry.get_attribute("class") == "canNotCreate open notActiveNode":
+       #entry.find_elements_by_xpath("//li/a/")
 #release browser
 #driver.close()
