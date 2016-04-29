@@ -7,8 +7,9 @@ from selenium.common.exceptions import TimeoutException
 import time
 #login to keysurvey
 #driver = webdriver.PhantomJS(executable_path=r'C:\phantomjs-2.1.1-windows\bin\phantomjs.exe')
-driver = webdriver.Chrome(executable_path=r'C:\phantomjs-2.1.1-windows\bin\chromedriver.exe')
-#driver = webdriver.Chrome(executable_path=r'E:\Projects\chromedriver.exe')
+#driver = webdriver.Chrome(executable_path=r'C:\phantomjs-2.1.1-windows\bin\chromedriver.exe')
+driver = webdriver.Chrome(executable_path=r'E:\Projects\chromedriver.exe')
+driver.implicitly_wait(15)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
@@ -30,17 +31,21 @@ element = WebDriverWait(driver, 10).until(
 EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li")))
 list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
 
-
 print(len(list), )
 for entry in list:
-    print(entry.get_attribute("title"))
+    #WebDriverWait(driver, 120)
     entry.click()
-   # element = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li//ul//li")))
-    list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li//ul//li")
+    #WebDriverWait(driver, 120)
+    newlist = entry.find_elements_by_class_name("surveyFolder")
+    print(len(newlist))
+    for items in newlist:
+        if len(newlist) > 0:
+            #WebDriverWait(driver, 360)
+            items.click()
+            #WebDriverWait(driver, 360)
 
-   #if entry.get_attribute("class") == "canNotCreate open notActiveNode":
-       #entry.find_elements_by_xpath("//li/a/")
+        #print(entry.get_attribute("title"), items.get_attribute("title"))
+#//*[@id="treeContainer"]/ul/li[2]/ul
 #release browser
 #driver.close()
 
