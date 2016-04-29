@@ -35,7 +35,7 @@ print(len(list), )
 for entry in list:
     print(entry.get_attribute("title"))
     entry.click()
-    element = WebDriverWait(driver, 10).until(
+   # element = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li//ul//li")))
     list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li//ul//li")
 
