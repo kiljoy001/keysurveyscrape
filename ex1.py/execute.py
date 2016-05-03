@@ -1,7 +1,11 @@
+from urllib.request import urlopen
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+import re
 from itertools import cycle
 from selenium.common.exceptions import TimeoutException
 
@@ -33,25 +37,32 @@ element = WebDriverWait(driver, 1).until(
 EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li")))
 list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
 
-print(len(list), )
+print(len(list))
 for entry in list:
     element = WebDriverWait(driver, 5).until(
     EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li/a")))
     entry.click()
     newlist = entry.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/ul//li//a")
-    print(len(newlist))
+bsObjList = []
 for items in newlist:
-    if len(newlist) > 0:
-        element = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li/ul//li//a")))
-        items.click()
-for items in list:
-    print(items.get_attribute("data-rights"), items.get_attribute("title"), items.get_attribute("class"), items.get_attribute("id"))
-    for stuff in cycle(newlist):
-        if not stuff.get_attribute("class") == "last":
-                print(stuff.get_attribute("data-rights"), stuff.get_attribute("title"), stuff.get_attribute("id"))
-        else:
-            break
+    element = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li/ul//li//a")))
+    ActionChains(driver).move_to_element(items).click(items).perform()
+    #html = urlopen(driver.current_url)
+    bsObj = BeautifulSoup(driver.page_source, "html.parser")
+    bsObjList.append(bsObj)
+print("number of bsObjects: ", len(bsObjList))
+for entry in bsObjList:
+    print(entry.prettify())
+#for items in list:
+    #subList = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/ul//li//ul//li")
+    #print("sublist: ", len(subList))
+    #print(items.get_attribute("data-rights"), items.get_attribute("title"), items.get_attribute("class"), items.get_attribute("id"))
+    #for stuff in cycle(newlist):
+        #if not stuff.get_attribute("class") == "last":
+                #print(stuff.get_attribute("data-rights"), stuff.get_attribute("title"), stuff.get_attribute("id"))
+        #else:
+            #break
 
         #print(entry.get_attribute("title"), items.get_attribute("title"))
 #//*[@id="treeContainer"]/ul/li[2]/ul
