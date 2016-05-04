@@ -1,3 +1,4 @@
+from sys import argv
 from urllib.request import urlopen
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -51,9 +52,11 @@ for items in newlist:
     #html = urlopen(driver.current_url)
     bsObj = BeautifulSoup(driver.page_source, "html.parser")
     bsObjList.append(bsObj)
+target = open("E:\Projects\keysurveyscrape\scrapeout.txt", 'w')
 print("number of bsObjects: ", len(bsObjList))
+datarights = {}
 for entry in bsObjList:
-    print(entry.prettify())
+    print(entry.find_all(id=re.compile("^f\d*")))
 #for items in list:
     #subList = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/ul//li//ul//li")
     #print("sublist: ", len(subList))
