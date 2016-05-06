@@ -1,3 +1,4 @@
+import unicodedata
 from sys import argv
 from urllib.request import urlopen
 from selenium import webdriver
@@ -69,6 +70,7 @@ print("length of secondlvl dictionary: ", len(secondLevel))
 surveyList = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 's')]")
 print("number of surveys found: ", len(surveyList))
 surveyDict = {}
+counter = 0
 for item in surveyList:
     if item.get_attribute("id") in surveyDict:
         pass
@@ -77,6 +79,8 @@ for item in surveyList:
     else:
         surveyDict[item.get_attribute("id")] = item.get_attribute("title")
         ActionChains(driver).move_to_element(item).click(item).perform()
+        counter+=1
+        print(counter, item.get_attribute("title"))
 print("length of dictionary list: ", len(surveyDict))
 subSurveyDict = {}
 subSurveyList = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 'f')]")
@@ -87,5 +91,5 @@ for item in subSurveyList:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
 print("number of items in subSurvey dict", len(subSurveyDict))
 bsObj = BeautifulSoup(driver.page_source, "html.parser")
-target = open("E:\Projects\keysurveyscrape\folderlist.txt", 'w')
-target.write(bsObj.find_all(id=re.compile("^f\d*")))
+with open(r"E:\Projects\keysurveyscrape\scrapeout.txt", 'w') as target:
+         target.write(bsObj.prettify())
