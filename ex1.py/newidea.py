@@ -88,9 +88,15 @@ for item in subSurveyList:
         pass
     else:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
-        listcontainer = driver.find_element_by_xpath("//*[starts-with(@id, 'r')]")
-        listedItems = listcontainer.find_elements_by_tag_name("a")
-        print(len(listedItems))
+
+listcontainer = driver.find_element_by_xpath("//*[starts-with(@id, 'r')]")
+listedItems = listcontainer.find_elements_by_tag_name("a")
+if len(listcontainer) > 0:
+    for each in listcontainer:
+        print(each.get_attribute("title"))
+    else:
+        pass
+
 
 #print("number of items in subSurvey dict", len(subSurveyDict))
 
