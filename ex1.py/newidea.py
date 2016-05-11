@@ -84,12 +84,19 @@ for item in surveyList:
 print("length of dictionary list: ", len(surveyDict))
 subSurveyDict = {}
 subSurveyList = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 'f')]")
+surveyListSubitems = []
 for item in subSurveyList:
     if item.get_attribute("id") in topLevel or item.get_attribute("id") in secondLevel:
         pass
     else:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
-print("number of items in subSurvey dict", len(subSurveyDict))
-bsObj = BeautifulSoup(driver.page_source, "html.parser")
-with open(r"E:\Projects\keysurveyscrape\scrapeout.txt", 'w') as target:
-         target.write(bsObj.prettify())
+        listcontainer = driver.find_element_by_id("listContainer")
+        listedItems = listcontainer.find_elements_by_tag_name("li")
+        for item in listedItems:
+            print(item.get_attribute("title"))
+
+#print("number of items in subSurvey dict", len(subSurveyDict))
+
+#bsObj = BeautifulSoup(driver.page_source, "html.parser")
+#with open(r"E:\Projects\keysurveyscrape\scrapeout.txt", 'w') as target:
+         #target.write(bsObj.prettify())
