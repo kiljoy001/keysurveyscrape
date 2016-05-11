@@ -1,6 +1,4 @@
-import unicodedata
-from sys import argv
-from urllib.request import urlopen
+
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -14,9 +12,9 @@ from selenium.common.exceptions import TimeoutException
 import time
 #login to keysurvey
 #driver = webdriver.PhantomJS(executable_path=r'C:\phantomjs-2.1.1-windows\bin\phantomjs.exe')
-#driver = webdriver.Chrome(executable_path=r'C:\phantomjs-2.1.1-windows\bin\chromedriver.exe')
-driver = webdriver.Chrome(executable_path=r'E:\Projects\chromedriver.exe')
-driver.implicitly_wait(2)
+driver = webdriver.Chrome(executable_path=r'C:\phantomjs-2.1.1-windows\bin\chromedriver.exe')
+#driver = webdriver.Chrome(executable_path=r'E:\Projects\chromedriver.exe')
+driver.implicitly_wait(5)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
@@ -30,10 +28,9 @@ driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").
 print(driver.current_url)
 #https://app.keysurvey.com/app/action/report/Home/view/custom/
 #open main link
-#element = WebDriverWait(driver, 1).until(
-#EC.element_to_be_clickable((By.XPATH, "//*[@id='main']")))
-main = driver.find_element_by_xpath("//*[@id='main']")
-main.click()
+element = WebDriverWait(driver, 1).until(
+EC.element_to_be_clickable((By.XPATH, "//*[@id='main']")))
+element.click()
 
 #element = WebDriverWait(driver, 1).until(
 #EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li")))
@@ -91,5 +88,9 @@ for item in subSurveyList:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
 print("number of items in subSurvey dict", len(subSurveyDict))
 bsObj = BeautifulSoup(driver.page_source, "html.parser")
-with open(r"E:\Projects\keysurveyscrape\scrapeout.txt", 'w') as target:
-         target.write(bsObj.prettify())
+for child in bsObj.recursiveChildGenerator():
+    title = getattr(child, "title", None)
+    if title is not None:
+        print(title)
+    elif not child.isspace():
+        print(child)
