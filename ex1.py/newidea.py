@@ -35,8 +35,6 @@ print(driver.current_url)
 main = driver.find_element_by_xpath("//*[@id='main']")
 main.click()
 
-#element = WebDriverWait(driver, 1).until(
-#EC.element_to_be_clickable((By.XPATH, "//*[@id='treeContainer']/ul/li[2]/ul//li")))
 list = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 'f')]")
 print("list of top level items: ",len(list))
 topLevel ={}
@@ -90,10 +88,9 @@ for item in subSurveyList:
         pass
     else:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
-        listcontainer = driver.find_element_by_id("listContainer")
-        listedItems = listcontainer.find_elements_by_tag_name("li")
-        for item in listedItems:
-            print(item.get_attribute("title"))
+        listcontainer = driver.find_element_by_xpath("//*[starts-with(@id, 'r')]")
+        listedItems = listcontainer.find_elements_by_tag_name("a")
+        print(len(listedItems))
 
 #print("number of items in subSurvey dict", len(subSurveyDict))
 
