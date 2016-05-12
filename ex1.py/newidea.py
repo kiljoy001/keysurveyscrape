@@ -78,7 +78,7 @@ for item in surveyList:
         surveyDict[item.get_attribute("id")] = item.get_attribute("title")
         ActionChains(driver).move_to_element(item).click(item).perform()
         counter+=1
-        print(counter, item.get_attribute("title"))
+        #print(counter, item.get_attribute("title"))
 print("length of dictionary list: ", len(surveyDict))
 subSurveyDict = {}
 subSurveyList = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 'f')]")
@@ -88,14 +88,13 @@ for item in subSurveyList:
         pass
     else:
         subSurveyDict[item.get_attribute("id")] = item.get_attribute("title")
+        listcontainer = driver.find_elements_by_css_selector("#listContainer > ul > *")
+        for each in listcontainer:
+            if each.tag_name == "a":
+                print(each.text)
+        else:
+            print(each.tag_name, each.text)
 
-listcontainer = driver.find_element_by_xpath("//*[starts-with(@id, 'r')]")
-listedItems = listcontainer.find_elements_by_tag_name("a")
-if len(listcontainer) > 0:
-    for each in listcontainer:
-        print(each.get_attribute("title"))
-    else:
-        pass
 
 
 #print("number of items in subSurvey dict", len(subSurveyDict))
