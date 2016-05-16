@@ -15,6 +15,20 @@ import time
 #login to keysurvey
 #driver = webdriver.PhantomJS(executable_path=r'C:\phantomjs-2.1.1-windows\bin\phantomjs.exe')
 #driver = webdriver.Chrome(executable_path=r'C:\phantomjs-2.1.1-windows\bin\chromedriver.exe')
+
+def execute_click(WebDriver, string):
+    """
+
+    :param WebDriver: Selenium webdriver
+    :param string: css selector to the item to be clicked on
+    :return: returns void
+    """
+
+    element = WebDriverWait(WebDriver, 5).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, string)))
+    element.click()
+    return
+
 driver = webdriver.Chrome(executable_path=r'E:\Projects\chromedriver.exe')
 driver.implicitly_wait(10)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
@@ -56,17 +70,24 @@ for item in list:
     for each in list2:
         print("List 2:", subCounter, each.text)
         ActionChains(driver).move_to_element(each).click(each).perform()
-        list3 = driver.find_elements_by_css_selector(".aBodySList > ul > *")
-        print("list3 len:", len(list3))
+
+list3 = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 's')]")
 for entry in list3:
-            ActionChains(entry).move_to_element(entry).click(entry).perform()
-            exportLink = entry.find_element_by_css_selector("#exportCSVLink")
-            ActionChains(exportLink).move_to_element(exportLink).click(exportLink).perform()
-            selectLabelValue = entry.find_element_by_css_selector("#exportValuesLabelsCSV3")
-            ActionChains(selectLabelValue).move_to_element(selectLabelValue).click(selectLabelValue).perform()
-            btnScheduleReport = entry.find_element_by_css_selector("#FTPDIV > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > a")
-            ActionChains(btnScheduleReport).move_to_element(btnScheduleReport).click(btnScheduleReport).perform()
-            csvSelect = entry.find_element_by_css_selector("#exportTypeCSV")
+    print(entry.text, entry.tag_name)
+    subList3 = entry.find_elements_by_css_selector("#listContainer > ul > *")
+    for each in subList3:
+        print(type(each), each.tag_name)
+        execute_click(driver, "a")
+print("list3 length: ",len(list3))
+
+            #ActionChains(entry).move_to_element(entry).click(entry).perform()
+            #exportLink = entry.find_element_by_css_selector("#exportCSVLink")
+            #ActionChains(exportLink).move_to_element(exportLink).click(exportLink).perform()
+            #selectLabelValue = entry.find_element_by_css_selector("#exportValuesLabelsCSV3")
+            #ActionChains(selectLabelValue).move_to_element(selectLabelValue).click(selectLabelValue).perform()
+            #btnScheduleReport = entry.find_element_by_css_selector("#FTPDIV > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > a")
+            #ActionChains(btnScheduleReport).move_to_element(btnScheduleReport).click(btnScheduleReport).perform()
+            #csvSelect = entry.find_element_by_css_selector("#exportTypeCSV")
 
 #formatSettings > div > ul
 #formatSettings > div > ul
