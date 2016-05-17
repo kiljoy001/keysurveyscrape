@@ -34,8 +34,10 @@ driver.implicitly_wait(10)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
-eleUsername.send_keys("RTCResearch@rtc.edu")
-elePassword.send_keys("R3search1")
+eleUsername.send_keys("kiljoy001@gmail.com")
+elePassword.send_keys("$Master001")
+#eleUsername.send_keys("RTCResearch@rtc.edu")
+#elePassword.send_keys("R3search1")
 driver.find_element_by_id("loginButton").click()
 #https://app.keysurvey.com/app/action/Home/view/main/
 #select reports link
@@ -74,10 +76,18 @@ for item in list:
 list3 = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 's')]")
 for entry in list3:
     print(entry.text, entry.tag_name)
-    subList3 = entry.find_elements_by_css_selector("#listContainer > ul > *")
+    subList3 = driver.find_elements_by_css_selector("#listContainer > ul > *")
+    print("sublist", len(subList3))
     for each in subList3:
         print(type(each), each.tag_name)
-        execute_click(driver, "a")
+        execute_click(driver, "#listContainer > ul a")
+        element = WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+        element.click()
+        element = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#exportValuesLabelsCSV3"))
+        )
+        element.click()
 print("list3 length: ",len(list3))
 
             #ActionChains(entry).move_to_element(entry).click(entry).perform()
