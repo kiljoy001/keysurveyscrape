@@ -27,7 +27,7 @@ def xpath_soup(element):
     return '/%s' % '/'.join(components)
 
 def get_element(node):
-  # for XPATH we have to count only for nodes with same type!
+  #for XPATH we have to count only for nodes with same type!
   length = len(list(node.previous_siblings)) + 1
   if (length) > 1:
     return '%s:nth-child(%s)' % (node.name, length)
