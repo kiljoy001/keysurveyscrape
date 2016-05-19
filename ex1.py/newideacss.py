@@ -63,7 +63,13 @@ for item in list:
     counter += 1
     print("Top Level:", counter, item.text)
     topLevel[item.get_attribute("id")] = item.get_attribute("title")
-    ActionChains(driver).move_to_element(item).click(item).perform()
+    element = WebDriverWait(driver, 20).until(
+        lambda s: s.execute_script("return jQuery.active == 0"))
+    if element:
+        ActionChains(driver).move_to_element(item).click(item).perform()
+    else:
+        continue
+
 
 # keeps track of the subfolder
 subCounter = 0
@@ -75,51 +81,78 @@ for item in list:
     subLevel[item.get_attribute("id")] = item.get_attribute("title")
     for each in list2:
         print("List 2:", subCounter, each.text)
-        ActionChains(driver).move_to_element(each).click(each).perform()
+        element = WebDriverWait(driver, 20).until(
+            lambda s: s.execute_script("return jQuery.active == 0"))
+        if element:
+            ActionChains(driver).move_to_element(each).click(each).perform()
+        else:
+            continue
+
 
 list3 = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 's')]")
+tempList3 = {}
 for entry in list3:
+    tempList3[entry.get_attribute("id")] = entry.text
+    surveyNum = entry.get_attribute("id")
     print(entry.text, entry.tag_name)
     subList3 = driver.find_elements_by_css_selector("#listContainer > ul > *")
     print("sublist", len(subList3))
+    tempMem = {}
     for each in subList3:
-        print(type(each), each.tag_name)
+        print(each.get_attribute("id"), each.text)
+        tempMem[each.get_attribute("id")] = each.text
+        reportNum = each.get_attribute("id")
         execute_click(driver, "#listContainer > ul a")
-        element = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-        element.click()
         element = WebDriverWait(driver, 20).until(
-            lambda s: s.execute_script("return jQuery.active == 0")
-            # EC.element_to_be_clickable((By.CSS_SELECTOR, "#exportValuesLabelsCSV3.radio"))
-        )
+            lambda s: s.execute_script("return jQuery.active == 0"))
+        if element:
+            element = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+            element.click()
+        element = WebDriverWait(driver, 20).until(
+            lambda s: s.execute_script("return jQuery.active == 0"))
         if element:
             csvRadio = driver.find_element_by_css_selector("#exportValuesLabelsCSV3.radio")
             csvRadio.click()
         else:
-            pass
+            continue
         csvDownload = driver.find_element_by_css_selector(
             "#butExportToCSV > table > tbody > tr > td:nth-child(1) > div > button")
         csvDownload.click()
+        element = WebDriverWait(driver, 20).until(
+           EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#progress_csv'),
+                                                  "Export completed! Please click here if nothing happens"))
+        if element:
+            driver.find_element_by_xpath("//*[@id='emptySel']/a").click()
+        else:
+            pass
+
+        subList3.clear()
+        subList3 = driver.find_elements_by_css_selector("#listContainer > ul > *")
+        for items in subList3:
+            print("subList3", items.text)
+            if reportNum in tempMem:
+                if tempMem.get(reportNum) in items.text:
+                    subList3.remove(items)
+                    print("Item removed, items left:", len(subList3))
+                else:
+                    continue
+            continue
+        else:
+            continue
+    tempMem.clear()
+    list3.clear()
+    list3 = driver.find_elements_by_xpath("//*[@id='treeContainer']//a[starts-with(@id, 's')]")
+    for listed in list3:
+        print("list3", listed.text)
+        if surveyNum in tempList3:
+            if tempList3.get(surveyNum) in listed.text:
+                list3.remove(listed)
+            else:
+                continue
+        else:
+            continue
+    continue
+tempList3.clear()
+
 print("list3 length: ", len(list3))
-
-# ActionChains(entry).move_to_element(entry).click(entry).perform()
-# exportLink = entry.find_element_by_css_selector("#exportCSVLink")
-# ActionChains(exportLink).move_to_element(exportLink).click(exportLink).perform()
-# selectLabelValue = entry.find_element_by_css_selector("#exportValuesLabelsCSV3")
-# ActionChains(selectLabelValue).move_to_element(selectLabelValue).click(selectLabelValue).perform()
-# btnScheduleReport = entry.find_element_by_css_selector("#FTPDIV > table > tbody > tr:nth-child(1) > td:nth-child(2)
-# > div > a")
-# ActionChains(btnScheduleReport).move_to_element(btnScheduleReport).click(btnScheduleReport).perform()
-# csvSelect = entry.find_element_by_css_selector("#exportTypeCSV")
-
-
-# formatSettings > div > ul
-# formatSettings > div > ul
-# closed = driver.find_elements_by_xpath("//*[@id='treeContainer']//li[@class='close']")
-# if len(closed) > 0:
-# for each in closed:
-# if each.text ==
-# list.append(each)
-# print("added to list!")
-# else:
-# pass
