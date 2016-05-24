@@ -112,10 +112,20 @@ for index in range(1, totalSurvey):
             csvRadioClick = WebDriverWait(driver, 20).until(
                 lambda s: s.execute_script("return jQuery.active == 0"))
             if csvRadioClick:
+                # try:
+                #     checkAlert = WebDriverWait(driver, 20).until(EC.alert_is_present())
+                #     alert = driver.switch_to().alert()
+                #     alert.accept()
                 driver.execute_script("downloadExportWithLink(3,4);")
-            backClick = WebDriverWait(driver, 20).until(
-                lambda s: s.execute_script("return jQuery.active == 0"))
-            if backClick:
-                driver.back()
+                javaCheck = WebDriverWait(driver, 20).until(
+                   EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                if javaCheck:
+                    checkagain = WebDriverWait(driver, 20).until(
+                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                    if checkagain:
+                        reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                        ActionChains(driver).move_to_element(reportsLink).click(reportsLink).perform()
+
+
 
 
