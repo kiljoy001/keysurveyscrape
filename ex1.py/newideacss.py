@@ -52,80 +52,171 @@ print(driver.current_url)
 
 main = driver.find_element_by_css_selector("#main")
 main.click()
-branch_css_path = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li.open.activS > ul >" \
-                  " li:nth-child({0}) a"
-tree_css_path = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:nth-child({0}) a"
-css_path = "#listContainer > ul > li:nth-child({0}) a"
-surveyXP = "//*[@id='treeContainer']//a[starts-with(@id, 's')]"
-standReport = "//*[@id='treeContainer']//a[@id='r-1']"
-treeList = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul a"
-topList = len(driver.find_elements_by_css_selector(treeList))
 
-# print("list of top level items: ", len(list))
+list = driver.find_elements_by_css_selector("#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > *")
+
+print("list of top level items: ", len(list))
 topLevel = {}
 # counter keeps track of the folder
 counter = 0
-for item in range(1, topList):
+for item in list:
     counter += 1
     # print("Top Level:", counter, item.text)
     # topLevel[item.get_attribute("id")] = item.get_attribute("title")
     element = WebDriverWait(driver, 20).until(
         lambda s: s.execute_script("return jQuery.active == 0"))
     if element:
-        driver.find_element_by_css_selector(tree_css_path.format(item)).click()
-    else:
-        continue
-
-# keeps track of the subfolder
-subCounter = 0
-subLevel = {}
-for item in range(1, topList):
-    # folder match - if the counter is the same then then subitems are in the same folder
-    subCounter += 1
-    list2 = len(driver.find_elements_by_css_selector(branch_css_path.format(item)))
-    # subLevel[item.get_attribute("id")] = item.get_attribute("title")
-    for each in range(1, list2):
-        # print("List 2:", subCounter, each.text)
-        element = WebDriverWait(driver, 20).until(
-            lambda s: s.execute_script("return jQuery.active == 0"))
-        if element:
-            ActionChains(driver).move_to_element(each).click(each).perform()
-            standReportList = driver.find_elements_by_xpath(standReport)
-            sublist = driver.find_elements_by_xpath(surveyXP)
-            for unit in standReportList:
-                sublist.append(unit)
-            totalSurvey = len(sublist)
-            print("totalSurvey len: ", totalSurvey)
-            for index in range(1, totalSurvey):
+        ActionChains(driver).move_to_element(item).click(item).perform()
+        # keeps track of the subfolder
+        subCounter = 0
+        subLevel = {}
+        branchPath = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:nth-child({0})"
+        for item in list:
+            # folder match - if the counter is the same then then subitems are in the same folder
+            subCounter += 1
+            list2 = driver.find_elements_by_css_selector(
+                "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li"
+            )
+            # subLevel[item.get_attribute("id")] = item.get_attribute("title")
+            for each in (1, len(list2)):
+                print(len(list2))
                 element = WebDriverWait(driver, 20).until(
                     lambda s: s.execute_script("return jQuery.active == 0"))
                 if element:
-                    subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
-                print("subindex length: ", subIndex)
-                for stuff in range(1, subIndex + 1):
-                    element = WebDriverWait(driver, 20).until(
-                        lambda s: s.execute_script("return jQuery.active == 0"))
-                    if element:
-                        driver.find_element_by_css_selector(css_path.format(stuff)).click()
-                        csvElement = WebDriverWait(driver, 20).until(
+                    driver.find_element_by_css_selector(branchPath.format(each)).click()
+                    css_path = "#listContainer > ul > li:nth-child({0}) a"
+                    surveyXP = "//*[@id='treeContainer']//a[starts-with(@id, 's')]"
+                    totalSurvey = len(driver.find_elements_by_xpath(surveyXP))
+                    print("totalSurvey len: ", totalSurvey)
+                    for index in range(1, totalSurvey):
+                        element = WebDriverWait(driver, 20).until(
                             lambda s: s.execute_script("return jQuery.active == 0"))
-                        if csvElement:
-                            csvClick = WebDriverWait(driver, 5).until(
-                                EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                            csvClick.click()
-                        csvRadioClick = WebDriverWait(driver, 20).until(
-                            lambda s: s.execute_script("return jQuery.active == 0"))
-                        if csvRadioClick:
-                            driver.execute_script("downloadExportWithLink(3,4);")
-                            javaCheck = WebDriverWait(driver, 20).until(
-                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                            if javaCheck:
-                                checkagain = WebDriverWait(driver, 20).until(
-                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                if checkagain:
-                                    reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                    ActionChains(driver).move_to_element(reportsLink).click(reportsLink).perform()
-        else:
-            continue
+                        if element:
+                            subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
+                        print("subindex length: ", subIndex)
+                        for unit in range(1, subIndex + 1):
+                            element = WebDriverWait(driver, 20).until(
+                                lambda s: s.execute_script("return jQuery.active == 0"))
+                            if element:
+                                driver.find_element_by_css_selector(css_path.format(unit)).click()
+                                csvElement = WebDriverWait(driver, 20).until(
+                                    lambda s: s.execute_script("return jQuery.active == 0"))
+                                if csvElement:
+                                    csvClick = WebDriverWait(driver, 5).until(
+                                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                                    csvClick.click()
+                                csvRadioClick = WebDriverWait(driver, 20).until(
+                                    lambda s: s.execute_script("return jQuery.active == 0"))
+                                if csvRadioClick:
+                                    driver.execute_script("downloadExportWithLink(3,4);")
+                                    javaCheck = WebDriverWait(driver, 20).until(
+                                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                    if javaCheck:
+                                        checkagain = WebDriverWait(driver, 20).until(
+                                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                        if checkagain:
+                                            reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                                            ActionChains(driver).move_to_element(reportsLink).click(
+                                                reportsLink).perform()
+                                            pageloaded = WebDriverWait(driver, 20).until(
+                                                lambda s: s.execute_script("return jQuery.active == 0"))
+                                            if pageloaded:
+                                                list2 = driver.find_elements_by_css_selector(
+                                                    "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > * > ul > *")
+    else:
+        continue
+
+
+# keeps track of the subfolder
+# subCounter = 0
+# subLevel = {}
+# branchPath = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:nth-child({0})"
+# for item in list:
+#     # folder match - if the counter is the same then then subitems are in the same folder
+#     subCounter += 1
+#     list2 = driver.find_elements_by_css_selector(
+#         "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li"
+#         )
+#     # subLevel[item.get_attribute("id")] = item.get_attribute("title")
+#     for each in(1, len(list2)):
+#         print(len(list2))
+#         element = WebDriverWait(driver, 20).until(
+#             lambda s: s.execute_script("return jQuery.active == 0"))
+#         if element:
+#             driver.find_element_by_css_selector(branchPath.format(each)).click()
+#             css_path = "#listContainer > ul > li:nth-child({0}) a"
+#             surveyXP = "//*[@id='treeContainer']//a[starts-with(@id, 's')]"
+#             totalSurvey = len(driver.find_elements_by_xpath(surveyXP))
+#             print("totalSurvey len: ", totalSurvey)
+#             for index in range(1, totalSurvey):
+#                 element = WebDriverWait(driver, 20).until(
+#                     lambda s: s.execute_script("return jQuery.active == 0"))
+#                 if element:
+#                     subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
+#                 print("subindex length: ", subIndex)
+#                 for unit in range(1, subIndex + 1):
+#                     element = WebDriverWait(driver, 20).until(
+#                         lambda s: s.execute_script("return jQuery.active == 0"))
+#                     if element:
+#                         driver.find_element_by_css_selector(css_path.format(unit)).click()
+#                         csvElement = WebDriverWait(driver, 20).until(
+#                             lambda s: s.execute_script("return jQuery.active == 0"))
+#                         if csvElement:
+#                             csvClick = WebDriverWait(driver, 5).until(
+#                                 EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+#                             csvClick.click()
+#                         csvRadioClick = WebDriverWait(driver, 20).until(
+#                             lambda s: s.execute_script("return jQuery.active == 0"))
+#                         if csvRadioClick:
+#                             driver.execute_script("downloadExportWithLink(3,4);")
+#                             javaCheck = WebDriverWait(driver, 20).until(
+#                                 EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+#                             if javaCheck:
+#                                 checkagain = WebDriverWait(driver, 20).until(
+#                                     EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+#                                 if checkagain:
+#                                     reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+#                                     ActionChains(driver).move_to_element(reportsLink).click(reportsLink).perform()
+#                                     pageloaded = WebDriverWait(driver, 20).until(
+#                                         lambda s: s.execute_script("return jQuery.active == 0"))
+#                                     if pageloaded:
+#                                         list2 = driver.find_elements_by_css_selector("#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > * > ul > *")
+#         else:
+#             continue
+# css_path = "#listContainer > ul > li:nth-child({0}) a"
+# surveyXP = "//*[@id='treeContainer']//a[starts-with(@id, 's')]"
+# totalSurvey = len(driver.find_elements_by_xpath(surveyXP))
+# print("totalSurvey len: ", totalSurvey)
+# for index in range(1, totalSurvey):
+#     element = WebDriverWait(driver, 20).until(
+#         lambda s: s.execute_script("return jQuery.active == 0"))
+#     if element:
+#         subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
+#     print("subindex length: ", subIndex)
+#     for each in range(1, subIndex):
+#         element = WebDriverWait(driver, 20).until(
+#             lambda s: s.execute_script("return jQuery.active == 0"))
+#         if element:
+#             driver.find_element_by_css_selector(css_path.format(each)).click()
+#             csvElement = WebDriverWait(driver, 20).until(
+#                 lambda s: s.execute_script("return jQuery.active == 0"))
+#             if csvElement:
+#                 csvClick = WebDriverWait(driver, 5).until(
+#                     EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+#                 csvClick.click()
+#             csvRadioClick = WebDriverWait(driver, 20).until(
+#                 lambda s: s.execute_script("return jQuery.active == 0"))
+#             if csvRadioClick:
+#                 driver.execute_script("downloadExportWithLink(3,4);")
+#                 javaCheck = WebDriverWait(driver, 20).until(
+#                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+#                 if javaCheck:
+#                     checkagain = WebDriverWait(driver, 20).until(
+#                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+#                     if checkagain:
+#                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+#                         ActionChains(driver).move_to_element(reportsLink).click(reportsLink).perform()
+
+
 
 
