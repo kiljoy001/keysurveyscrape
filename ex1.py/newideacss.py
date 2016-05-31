@@ -57,33 +57,21 @@ accum = 0
 
 flist = driver.find_elements_by_css_selector("#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > *")
 fqueue = deque(flist)
-# print("list of top level items: ", len(list))
-topLevel = {}
-# counter keeps track of the folder
-counter = 0
-for item in fqueue:
-    counter += 1
-    # print("Top Level:", counter, item.text)
-    # topLevel[item.get_attribute("id")] = item.get_attribute("title")
+counter = list(fqueue)
+for item in counter:
+    # counter += 1
     element = WebDriverWait(driver, 20).until(
         lambda s: s.execute_script("return jQuery.active == 0"))
     if element:
         # Crashes here after 1 cycle
         ActionChains(driver).move_to_element(item).click(item).perform()
-        # keeps track of the subfolder
-        subCounter = 0
-        subLevel = {}
-        branchPath = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:nth-child({0}) > a"
-        for units in fqueue:
-            # folder match - if the counter is the same then then subitems are in the same folder
-            subCounter += 1
-            list2 = driver.find_elements_by_css_selector(
+        branchPath = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:nth-child({0}) ~ a"
+        # branchPath = "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li:last-child > a"
+        list2 = driver.find_elements_by_css_selector(
                 "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li"
             )
-            queue = deque(list2)
-            # subLevel[item.get_attribute("id")] = item.get_attribute("title")
-
-            for each in range(1, len(queue)):
+        queue = deque(list2)
+        for each in range(1, len(queue)):
                 print(len(list2))
                 accum += 1
 
@@ -91,49 +79,51 @@ for item in fqueue:
                     lambda s: s.execute_script("return jQuery.active == 0"))
                 if element:
                     # selects next folder
-                    if accum >= len(queue):
-                        nextFolder = driver.find_element_by_css_selector(branchPath.format(accum))
-                        ActionChains(driver).move_to_element(nextFolder).click(nextFolder).perform()
-                    else:
-                        intialFolder = driver.find_element_by_css_selector(branchPath.format(each)).click()
-                    css_path = "#listContainer > ul > li:nth-child({0}) a"
-                    element = WebDriverWait(driver, 20).until(
-                        lambda s: s.execute_script("return jQuery.active == 0"))
-                    if element:
-                        subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
-                        for unit in range(1, subIndex + 1):
-                            element = WebDriverWait(driver, 20).until(
-                                lambda s: s.execute_script("return jQuery.active == 0"))
-                            if element:
-                                driver.find_element_by_css_selector(css_path.format(unit)).click()
-                                csvElement = WebDriverWait(driver, 20).until(
-                                    lambda s: s.execute_script("return jQuery.active == 0"))
-                                if csvElement:
-                                    csvClick = WebDriverWait(driver, 5).until(
-                                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                                    csvClick.click()
-                                    csvRadioClick = WebDriverWait(driver, 20).until(
-                                        lambda s: s.execute_script("return jQuery.active == 0"))
-                                    if csvRadioClick:
-                                        driver.execute_script("downloadExportWithLink(3,4);")
-                                        javaCheck = WebDriverWait(driver, 20).until(
-                                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                        if javaCheck:
-                                            checkagain = WebDriverWait(driver, 20).until(
-                                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                            if checkagain:
-                                                reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                                ActionChains(driver).move_to_element(reportsLink).click(
-                                                    reportsLink).perform()
-                        list2 = driver.find_elements_by_css_selector(
-                            "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li")
-                        queue = deque(list2)
-                flist = driver.find_elements_by_css_selector(
-                    "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > *")
-                fqueue = deque(flist)
-                # fqueue.popleft()
-
-    else:
-        continue
-
-
+                    nextFolder = driver.find_element_by_css_selector(branchPath.format(accum))
+                    ActionChains(driver).click(nextFolder).perform()
+    #   intialFolder = driver.find_element_by_css_selector(branchPath.format(each)).click()
+    #                 css_path = "#listContainer > ul > li:nth-child({0}) a"
+    #                 element = WebDriverWait(driver, 20).until(
+    #                     lambda s: s.execute_script("return jQuery.active == 0"))
+    #                 if element:
+    #                     # loop through survey folder list
+    #                     subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
+    #                     for unit in range(1, subIndex + 1):
+    #                         element = WebDriverWait(driver, 20).until(
+    #                             lambda s: s.execute_script("return jQuery.active == 0"))
+    #                         if element:
+    #                             driver.find_element_by_css_selector(css_path.format(unit)).click()
+    #                             csvElement = WebDriverWait(driver, 20).until(
+    #                                 lambda s: s.execute_script("return jQuery.active == 0"))
+    #                             if csvElement:
+    #                                 csvClick = WebDriverWait(driver, 5).until(
+    #                                     EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+    #                                 csvClick.click()
+    #                                 csvRadioClick = WebDriverWait(driver, 20).until(
+    #                                     lambda s: s.execute_script("return jQuery.active == 0"))
+    #                                 # download phase
+    #                                 if csvRadioClick:
+    #                                     driver.execute_script("downloadExportWithLink(3,4);")
+    #                                     javaCheck = WebDriverWait(driver, 20).until(
+    #                                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+    #                                     # double check to see if the reports link is clickable
+    #                                     if javaCheck:
+    #                                         checkagain = WebDriverWait(driver, 20).until(
+    #                                             EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+    #                                         if checkagain:
+    #                                             reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+    #                                             ActionChains(driver).move_to_element(reportsLink).click(
+    #                                                 reportsLink).perform()
+    #                     list2 = driver.find_elements_by_css_selector(
+    #                         "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > li")
+    #                     queue = deque(list2)
+    #
+    #     fqueue.clear()
+    #     flist = driver.find_elements_by_css_selector(
+    #                 "#treeContainer > ul > li.canNotCreate.open.notActiveNode > ul > *")
+    #     fqueue = deque(flist)
+    #     fqueue.pop()
+    #     counter = list(fqueue)
+    #
+    # else:
+    #     continue
