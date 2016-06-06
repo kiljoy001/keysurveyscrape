@@ -104,78 +104,87 @@ driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").
 execute_xpath(driver, "//*[@id='main']")
 try:
     accum = 0
-    locationlist = {}
+
     if check_jquery():
         folderTree = driver.find_elements_by_css_selector(".close > a")
-        for element in folderTree:
-            if accum > 0:
-                ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
-                locationlist[accum] = element.location
-                if check_jquery():
-                    ActionChains(driver).move_to_element(element).click(element).perform()
-                    check_jquery()
-                    if check_jquery():
-                        subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
-                        css_path = "#listContainer > ul > li:nth-child({0}) a"
-                        for unit in range(0, subIndex):
-                            if check_jquery() and unit > 0:
-                                driver.find_element_by_css_selector(css_path.format(unit)).click()
-                            else:
-                                continue
-                if check_jquery():
-                    csvClick = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                    csvClick.click()
-                    if check_jquery():
-                        driver.execute_script("downloadExportWithLink(3,4);")
-                        javaCheck = WebDriverWait(driver, 20).until(
-                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                        if javaCheck:
-                            checkagain = WebDriverWait(driver, 20).until(
-                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                            if checkagain:
-                                reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                ActionChains(driver).move_to_element(reportsLink).click(
-                                    reportsLink).perform()
-                folderTree.clear()
-                folderTree = driver.find_elements_by_css_selector(".close > a")
-                if len(folderTree) < accum:
-                    accum += 1
-                else:
-                    continue
-            else:
-                locationlist[accum] = element.location
-                if check_jquery():
+        loop = True
+        while loop:
+            if not folderTree:
+                loop = False
+            for element in folderTree:
+                if accum > 0:
+                    # move to the next element
                     ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
                     check_jquery()
+                    # cycle through the middle section of the page
                     if check_jquery():
                         subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
                         css_path = "#listContainer > ul > li:nth-child({0}) a"
-                        for unit in range(0, subIndex):
+                    # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
+                        for unit in range(1, subIndex + 1):
                             if check_jquery() and unit > 0:
                                 driver.find_element_by_css_selector(css_path.format(unit)).click()
                             else:
-                                continue
-                if check_jquery():
-                    csvClick = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                    csvClick.click()
+                                break
+                # download loop
                     if check_jquery():
-                        driver.execute_script("downloadExportWithLink(3,4);")
-                        javaCheck = WebDriverWait(driver, 20).until(
-                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                        if javaCheck:
-                            checkagain = WebDriverWait(driver, 20).until(
+                        csvClick = WebDriverWait(driver, 5).until(
+                            EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                        csvClick.click()
+                        if check_jquery():
+                            driver.execute_script("downloadExportWithLink(3,4);")
+                            javaCheck = WebDriverWait(driver, 20).until(
                                 EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                            if checkagain:
-                                reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                ActionChains(driver).move_to_element(reportsLink).click(
-                                    reportsLink).perform()
-                accum += 1
-                folderTree.clear()
-                folderTree = driver.find_elements_by_css_selector(".close > a")
-    # else:
-    #     pass
+                            if javaCheck:
+                                checkagain = WebDriverWait(driver, 20).until(
+                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                if checkagain:
+                                    reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                                    ActionChains(driver).move_to_element(reportsLink).click(
+                                        reportsLink).perform()
+
+                    folderTree.clear()
+                    folderTree = driver.find_elements_by_css_selector(".close > a")
+                    if len(folderTree) <= accum:
+                        accum += 1
+                    else:
+                        continue
+                else:
+                    check_jquery()
+                    if check_jquery():
+                        ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
+                        check_jquery()
+                        if check_jquery():
+                            subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
+                            css_path = "#listContainer > ul > li:nth-child({0}) a"
+                    # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
+                            for unit in range(1, subIndex + 1):
+                                if check_jquery() and unit >= 0:
+                                    driver.find_element_by_css_selector(css_path.format(unit)).click()
+                                else:
+                                    break
+                    if check_jquery():
+                        csvClick = WebDriverWait(driver, 5).until(
+                            EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                        csvClick.click()
+                        if check_jquery():
+                            driver.execute_script("downloadExportWithLink(3,4);")
+                            javaCheck = WebDriverWait(driver, 20).until(
+                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                            if javaCheck:
+                                checkagain = WebDriverWait(driver, 20).until(
+                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                if checkagain:
+                                    reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                                    ActionChains(driver).move_to_element(reportsLink).click(
+                                        reportsLink).perform()
+
+                    accum += 1
+                    folderTree.clear()
+                    folderTree = driver.find_elements_by_css_selector(".close > a")
+        if accum > len(folderTree):
+            loop = False
+
 except NoSuchElementException as ns:
     print("Error! {0}".format(ns))
 
