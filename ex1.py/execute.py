@@ -7,6 +7,8 @@ import collections
 from selenium.webdriver.common.action_chains import ActionChains
 import itertools
 
+
+
 def xpath_soup(element):
     """
     Generate xpath of soup element
@@ -62,6 +64,7 @@ def execute_css(WebDriver, string):
     element.click()
     return
 
+
 def nested_dict_iter(nested):
     for key, value in nested.iteritems():
         if isinstance(value, collections.Mapping):
@@ -73,8 +76,6 @@ def nested_dict_iter(nested):
 
 def check_jquery():
     """
-
-
     Check if jquery is active on page
     :return: boolean
     """
@@ -106,7 +107,8 @@ try:
     accum = 0
 
     if check_jquery():
-        folderTree = driver.find_elements_by_css_selector(".close > a")
+        # endPoints = driver.find_elements_by_xpath("//li[starts-with(@id, 's')]")
+        folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
         loop = True
         while loop:
             if not folderTree:
@@ -114,7 +116,10 @@ try:
             for element in folderTree:
                 if accum > 0:
                     # move to the next element
-                    ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
+                    check_jquery()
+                    if check_jquery():
+                        ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
+                        endPoints = element.find_elements_by_css_selector("ul > *")
                     check_jquery()
                     # cycle through the middle section of the page
                     if check_jquery():
@@ -144,7 +149,7 @@ try:
                                         reportsLink).perform()
 
                     folderTree.clear()
-                    folderTree = driver.find_elements_by_css_selector(".close > a")
+                    folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
                     if len(folderTree) <= accum:
                         accum += 1
                     else:
@@ -153,6 +158,7 @@ try:
                     check_jquery()
                     if check_jquery():
                         ActionChains(driver).move_to_element(folderTree[accum]).click(folderTree[accum]).perform()
+                        endPoints = element.find_elements_by_css_selector("ul > *")
                         check_jquery()
                         if check_jquery():
                             subIndex = len(driver.find_elements_by_css_selector("#listContainer > ul a"))
@@ -181,7 +187,8 @@ try:
 
                     accum += 1
                     folderTree.clear()
-                    folderTree = driver.find_elements_by_css_selector(".close > a")
+                    folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul/li[2]/ul//li/a")
+
         if accum > len(folderTree):
             loop = False
 
