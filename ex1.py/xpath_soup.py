@@ -48,6 +48,7 @@ def check_jquery():
 
 
 def open_folders():
+    """crawls through keysurvey folder list and opens all folders"""
     check_jquery()
     if check_jquery():
         folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
@@ -78,13 +79,44 @@ def open_folders():
             check_jquery()
             if check_jquery():
                 if combined[each2].is_displayed() and combined[each2].get_attribute("class") == "surveyFolderOpen":
+                    inner_loop()
                     continue
                 else:
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
+def inner_loop():
+    css_path = "#listContainer > ul > li:nth-child({0}) a"
+    # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
+    try:
+        findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
+        subIndex = len(findSub)
+        for unit in range(1, subIndex + 1):
+            if check_jquery() and unit > 0:
+                driver.find_element_by_css_selector(css_path.format(unit)).click()
+                # download loop
+                if check_jquery():
+                    csvClick = WebDriverWait(driver, 5).until(
+                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                    csvClick.click()
+                    if check_jquery():
+                        driver.execute_script("downloadExportWithLink(3,4);")
+                        javaCheck = WebDriverWait(driver, 20).until(
+                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                        if javaCheck:
+                            checkagain = WebDriverWait(driver, 20).until(
+                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                            if checkagain:
+                                reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                                ActionChains(driver).move_to_element(reportsLink).click(
+                                    reportsLink).perform()
+    except NoSuchElementException:
+        pass
+
+
+
+
 driver = webdriver.Chrome(executable_path=r'C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe')
-accum = 0
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
@@ -97,6 +129,10 @@ driver.find_element_by_id("loginButton").click()
 driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
 execute_xpath(driver, "//*[@id='main']")
-check_jquery()
-open_folders()
+
+try:
+    open_folders()
+
+except StaleElementReferenceException:
+    open_folders()
 
