@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import collections
+from collections import deque
 from selenium.webdriver.common.action_chains import ActionChains
 import itertools
 
@@ -57,7 +57,7 @@ def open_folders():
         for unit in range(len(folderTree)):
             check_jquery()
             if check_jquery():
-                if folderTree[unit].is_displayed() and folderTree[unit].get_attribute("class") == "surveyOpen":
+                if folderTree[unit].is_displayed() and folderTree[unit].get_attribute("class") == "surveyFolderOpen":
                     continue
                 else:
                     ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
@@ -79,16 +79,20 @@ def open_folders():
             check_jquery()
             if check_jquery():
                 if combined[each2].is_displayed() and combined[each2].get_attribute("class") == "surveyFolderOpen":
-                    inner_loop()
                     continue
                 else:
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
-def inner_loop():
+def inner_loop(combined):
     css_path = "#listContainer > ul > li:nth-child({0}) a"
-    # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
+    outerlist = deque(combined)
     try:
+        for item in range(len(outerlist)):
+            if outerlist[item].is_displayed() and outerlist[item].get_attribute("class") == "surveyFolderOpen":
+                ActionChains(driver).move_to_element(outerlist[item]).click(outerlist[item]).perform()
+    # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
+
         findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
         subIndex = len(findSub)
         for unit in range(1, subIndex + 1):
@@ -110,7 +114,10 @@ def inner_loop():
                                 reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
                                 ActionChains(driver).move_to_element(reportsLink).click(
                                     reportsLink).perform()
+
     except NoSuchElementException:
+        pass
+    except StaleElementReferenceException:
         pass
 
 
@@ -131,6 +138,7 @@ driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").
 execute_xpath(driver, "//*[@id='main']")
 
 try:
+    list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
     open_folders()
 
 except StaleElementReferenceException:
