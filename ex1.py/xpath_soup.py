@@ -84,13 +84,13 @@ def open_folders():
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
-def inner_loop(combined):
+def inner_loop(combined, accum):
     css_path = "#listContainer > ul > li:nth-child({0}) a"
     outerlist = deque(combined)
     try:
         for item in range(len(outerlist)):
-            if outerlist[item].is_displayed() and outerlist[item].get_attribute("class") == "surveyFolderOpen":
-                ActionChains(driver).move_to_element(outerlist[item]).click(outerlist[item]).perform()
+            if outerlist[accum].is_displayed() and outerlist[accum].get_attribute("class") == "surveyFolderOpen":
+                ActionChains(driver).move_to_element(outerlist[accum]).click(outerlist[accum]).perform()
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
 
         findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
@@ -136,11 +136,23 @@ driver.find_element_by_id("loginButton").click()
 driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
 execute_xpath(driver, "//*[@id='main']")
-
+accum = 0
+loop = True
+combined = []
 try:
-    list = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
-    open_folders()
+    while loop:
+        open_folders()
+        drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+        drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        for stuff in drFolder:
+            combined.append(stuff)
+        for stuff2 in drSurveys:
+            combined.append(stuff2)
+        inner_loop(combined, accum)
+        accum += 1
 
 except StaleElementReferenceException:
-    open_folders()
-
+    if accum >= len(combined):
+        loop = False
+    else:
+        loop = True
