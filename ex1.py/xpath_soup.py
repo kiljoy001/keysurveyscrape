@@ -92,32 +92,29 @@ def inner_loop(combined, accum):
             if outerlist[accum].is_displayed() and outerlist[accum].get_attribute("class") == "surveyFolderOpen":
                 ActionChains(driver).move_to_element(outerlist[accum]).click(outerlist[accum]).perform()
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
-
-        findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
-        subIndex = len(findSub)
-        for unit in range(1, subIndex + 1):
-            if check_jquery() and unit > 0:
-                driver.find_element_by_css_selector(css_path.format(unit)).click()
-                # download loop
-                if check_jquery():
-                    csvClick = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                    csvClick.click()
-                    if check_jquery():
-                        driver.execute_script("downloadExportWithLink(3,4);")
-                        javaCheck = WebDriverWait(driver, 20).until(
-                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                        if javaCheck:
-                            checkagain = WebDriverWait(driver, 20).until(
-                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                            if checkagain:
-                                reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                ActionChains(driver).move_to_element(reportsLink).click(
-                                    reportsLink).perform()
-
+                findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
+                subIndex = len(findSub)
+                check_jquery()
+                for unit in range(1, subIndex + 1):
+                    if check_jquery() and unit > 0:
+                        driver.find_element_by_css_selector(css_path.format(unit)).click()
+                        # download loop
+                        if check_jquery():
+                            csvClick = WebDriverWait(driver, 5).until(
+                                EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                            csvClick.click()
+                            if check_jquery():
+                                driver.execute_script("downloadExportWithLink(3,4);")
+                                javaCheck = WebDriverWait(driver, 20).until(
+                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                if javaCheck:
+                                    checkagain = WebDriverWait(driver, 20).until(
+                                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                    if checkagain:
+                                        reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                                        ActionChains(driver).move_to_element(reportsLink).click(
+                                            reportsLink).perform()
     except NoSuchElementException:
-        pass
-    except StaleElementReferenceException:
         pass
 
 
@@ -156,3 +153,13 @@ except StaleElementReferenceException:
         loop = False
     else:
         loop = True
+    while loop:
+        open_folders()
+        drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+        drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        for stuff in drFolder:
+            combined.append(stuff)
+        for stuff2 in drSurveys:
+            combined.append(stuff2)
+        inner_loop(combined, accum)
+        accum += 1
