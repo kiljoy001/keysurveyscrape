@@ -3,9 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from collections import deque
 from selenium.webdriver.common.action_chains import ActionChains
-import itertools
 
 
 def execute_xpath(WebDriver, string):
@@ -84,13 +82,23 @@ def open_folders():
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
+
+def create_list(drFolder, drSurveys):
+    """create clear and create list of folder items"""
+    combined = []
+    for stuff in drFolder:
+        combined.append(stuff)
+    for stuff2 in drSurveys:
+        combined.append(stuff2)
+    return combined
+
+
+
 def inner_loop(combined, accum):
     css_path = "#listContainer > ul > li:nth-child({0}) a"
-    outerlist = deque(combined)
-    try:
-        for item in range(len(outerlist)):
-            if outerlist[accum].is_displayed() and outerlist[accum].get_attribute("class") == "surveyFolderOpen":
-                ActionChains(driver).move_to_element(outerlist[accum]).click(outerlist[accum]).perform()
+    for item in range(len(combined)):
+                if combined[accum].is_displayed() and combined[accum].get_attribute("class") == "surveyFolderOpen":
+                    ActionChains(driver).move_to_element(combined[accum]).click(combined[accum]).perform()
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
                 findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
                 subIndex = len(findSub)
@@ -114,8 +122,7 @@ def inner_loop(combined, accum):
                                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
                                         ActionChains(driver).move_to_element(reportsLink).click(
                                             reportsLink).perform()
-    except NoSuchElementException:
-        pass
+
 
 
 
@@ -133,33 +140,12 @@ driver.find_element_by_id("loginButton").click()
 driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
 execute_xpath(driver, "//*[@id='main']")
-accum = 0
+accum = 1
 loop = True
-combined = []
-try:
-    while loop:
-        open_folders()
-        drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
-        drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        for stuff in drFolder:
-            combined.append(stuff)
-        for stuff2 in drSurveys:
-            combined.append(stuff2)
-        inner_loop(combined, accum)
-        accum += 1
 
-except StaleElementReferenceException:
-    if accum >= len(combined):
-        loop = False
-    else:
-        loop = True
-    while loop:
+while loop:
         open_folders()
         drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
         drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        for stuff in drFolder:
-            combined.append(stuff)
-        for stuff2 in drSurveys:
-            combined.append(stuff2)
-        inner_loop(combined, accum)
+        inner_loop(create_list(drFolder, drSurveys), accum)
         accum += 1
