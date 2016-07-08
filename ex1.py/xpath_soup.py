@@ -94,17 +94,14 @@ def create_list(drFolder, drSurveys):
 
 
 
-def inner_loop(combined, accum):
+def inner_loop():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
-    for item in range(len(combined)):
-                if combined[accum].is_displayed() and combined[accum].get_attribute("class") == "surveyFolderOpen":
-                    ActionChains(driver).move_to_element(combined[accum]).click(combined[accum]).perform()
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
-                findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
-                subIndex = len(findSub)
-                check_jquery()
-                for unit in range(1, subIndex + 1):
-                    if check_jquery() and unit > 0:
+    findSub = driver.find_elements_by_css_selector("#listContainer > ul a")
+    subIndex = len(findSub)
+    check_jquery()
+    for unit in range(1, subIndex + 1):
+        if check_jquery() and unit > 0:
                         driver.find_element_by_css_selector(css_path.format(unit)).click()
                         # download loop
                         if check_jquery():
@@ -145,7 +142,12 @@ loop = True
 
 while loop:
         open_folders()
-        drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+        #drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
         drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        inner_loop(create_list(drFolder, drSurveys), accum)
+        elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        map(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), elecontainer)
+        if elecontainer[accum].is_displayed():
+            ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
+            if check_jquery():
+                inner_loop()
         accum += 1
