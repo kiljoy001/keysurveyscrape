@@ -142,7 +142,6 @@ loop = True
 
 while loop:
         open_folders()
-        #drFolder = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
         drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
         elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
         map(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), elecontainer)
