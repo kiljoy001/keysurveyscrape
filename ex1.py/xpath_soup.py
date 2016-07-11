@@ -61,13 +61,6 @@ def open_folders():
                     ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
         test = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
         test2 = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        for each in range(len(test)):
-            check_jquery()
-            if check_jquery():
-                if test[each].is_displayed() and test[each].get_attribute("class") == "surveyFolderOpen":
-                    continue
-                else:
-                    ActionChains(driver).move_to_element(test[each]).click(test[each]).perform()
         combined = []
         for stuff in test:
             combined.append(stuff)
@@ -130,8 +123,6 @@ eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
 eleUsername.send_keys("RTCResearch@rtc.edu")
 elePassword.send_keys("R3search1")
-# eleUsername.send_keys("kiljoy001@gmail.com")
-# elePassword.send_keys("$Master001")
 driver.find_element_by_id("loginButton").click()
 
 driver.maximize_window()
