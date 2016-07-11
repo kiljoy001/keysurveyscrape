@@ -13,7 +13,7 @@ def execute_xpath(WebDriver, string):
     :return: none
     """
 
-    element = WebDriverWait(WebDriver, 5).until(
+    element = WebDriverWait(WebDriver, 30).until(
         EC.element_to_be_clickable((By.XPATH, string)))
     element.click()
     return
@@ -26,7 +26,7 @@ def execute_css(WebDriver, string):
     :return: none
     """
 
-    element = WebDriverWait(WebDriver, 5).until(
+    element = WebDriverWait(WebDriver, 30).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, string)))
     element.click()
     return
@@ -37,7 +37,7 @@ def check_jquery():
     Check if jquery is active on page
     :return: boolean
     """
-    check = WebDriverWait(driver, 20).until(lambda s: s.execute_script("return jQuery.active == 0"))
+    check = WebDriverWait(driver, 60).until(lambda s: s.execute_script("return jQuery.active == 0"))
     if check:
         result = True
     else:
@@ -105,15 +105,15 @@ def inner_loop():
                         driver.find_element_by_css_selector(css_path.format(unit)).click()
                         # download loop
                         if check_jquery():
-                            csvClick = WebDriverWait(driver, 5).until(
+                            csvClick = WebDriverWait(driver, 30).until(
                                 EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
                             csvClick.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
-                                javaCheck = WebDriverWait(driver, 20).until(
+                                javaCheck = WebDriverWait(driver, 60).until(
                                     EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                                 if javaCheck:
-                                    checkagain = WebDriverWait(driver, 20).until(
+                                    checkagain = WebDriverWait(driver, 60).until(
                                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                                     if checkagain:
                                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
