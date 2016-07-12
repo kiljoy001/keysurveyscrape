@@ -99,7 +99,7 @@ def inner_loop():
                         # download loop
                         if check_jquery():
                             csvClick = WebDriverWait(driver, 30).until(
-                                EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                                EC.element_to_be_clickable((By.ID, "exportCSVLink")))
                             csvClick.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
