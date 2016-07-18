@@ -94,13 +94,18 @@ def inner_loop():
     subIndex = len(findSub)
     check_jquery()
     for unit in range(1, subIndex + 1):
-        if check_jquery() and unit > 0:
+        if check_jquery():
+            clickCheck = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_path.format(unit))))
+            if clickCheck:
                         driver.find_element_by_css_selector(css_path.format(unit)).click()
                         # download loop
                         if check_jquery():
-                            csvClick = WebDriverWait(driver, 30).until(
+                            csvClick = WebDriverWait(driver, 60).until(
                                 EC.element_to_be_clickable((By.ID, "exportCSVLink")))
-                            csvClick.click()
+                            if csvClick:
+                                doubleCheck = WebDriverWait(driver, 60).until(
+                                EC.element_to_be_clickable((By.ID, "exportCSVLink")))
+                                doubleCheck.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
                                 javaCheck = WebDriverWait(driver, 60).until(
