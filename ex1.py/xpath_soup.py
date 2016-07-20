@@ -139,7 +139,8 @@ loop = True
 while loop:
         open_folders()
         drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        drFolders = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+        elecontainer = create_list(drFolders, drSurveys)
         map(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), elecontainer)
         if elecontainer[accum].is_displayed():
             ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
