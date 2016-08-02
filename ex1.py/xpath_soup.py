@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
 
 
 def execute_xpath(WebDriver, string):
@@ -120,10 +121,8 @@ def inner_loop():
                                         ActionChains(driver).move_to_element(reportsLink).click(
                                             reportsLink).perform()
 
-
-
-
-
+chrome_options = Options()
+chrome_options.binary_location(r'C:\Users\User\Documents\modchrome\modchrome\chrome.exe')
 driver = webdriver.Chrome(executable_path=r'C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe')
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
