@@ -122,8 +122,9 @@ def inner_loop():
                                             reportsLink).perform()
 
 chrome_options = Options()
-chrome_options.binary_location(r'C:\Users\User\Documents\modchrome\modchrome\chrome.exe')
-driver = webdriver.Chrome(executable_path=r'C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe')
+chrome_options.binary_location = r"C:\Users\User\Documents\modchrome\modchrome\chrome.exe"
+driver = webdriver.Chrome(executable_path=r'C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe',
+                          chrome_options=chrome_options)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
