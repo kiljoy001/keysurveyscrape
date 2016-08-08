@@ -5,6 +5,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
+import time
+
+def check_url(urlStore, WebDriver):
+    """
+    Compares input url to current url
+    :param urlStore:
+    :return: boolean
+    """
+    currentURL = WebDriver.current_url
+    if currentURL == urlStore:
+        return True
+    else:
+        return False
 
 
 def execute_xpath(WebDriver, string):
@@ -62,13 +75,6 @@ def open_folders():
                     ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
         test = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
         test2 = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        # for each in range(len(test)):
-        #     check_jquery()
-        #     if check_jquery():
-        #         if test[each].is_displayed() and test[each].get_attribute("class") == "surveyFolderOpen":
-        #             continue
-        #         else:
-        #             ActionChains(driver).move_to_element(test[each]).click(test[each]).perform()
         combined = []
         for stuff in test:
             combined.append(stuff)
@@ -106,6 +112,7 @@ def inner_loop():
                         if check_jquery():
                             csvClick = WebDriverWait(driver, 5).until(
                                 EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                            urlstore = driver.current_url
                             csvClick.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
@@ -118,6 +125,13 @@ def inner_loop():
                                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
                                         ActionChains(driver).move_to_element(reportsLink).click(
                                             reportsLink).perform()
+                                        if not check_url(urlstore, driver):
+                                            continue
+                                        else:
+                                            time.sleep(10)  # delay for 10 seconds
+                                            continue
+
+
 
 chrome_options = Options()
 chrome_options.binary_location = r"C:\Users\User\Documents\modchrome\modchrome\chrome.exe"
