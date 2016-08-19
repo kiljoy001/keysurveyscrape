@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 import time
+import yaml
 
 def check_url(urlStore, WebDriver):
     """
@@ -132,16 +133,26 @@ def inner_loop():
                                             continue
 
 
+def configFile():
+    """loads configuration yaml info from a yaml file Must specify path to file in raw text.
+        :return dictionary
+    """
+    with open(r'C:\Users\Scott\PycharmProjects\keysurveyscrape2\config.yaml') as f:
+        return yaml.load(f)
 
-chrome_options = Options()
-chrome_options.binary_location = r"C:\Users\User\Documents\modchrome\modchrome\chrome.exe"
-driver = webdriver.Chrome(executable_path=r'C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe',
-                          chrome_options=chrome_options)
+
+config = configFile()
+chrome_path = Options()
+chrome_path.binary_location = config['binarylocation']
+driver = webdriver.Chrome(executable_path=config['driverpath'])
+                          # chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
-eleUsername.send_keys("RTCResearch@rtc.edu")
-elePassword.send_keys("R3search1")
+
+eleUsername.send_keys(config['login'])
+elePassword.send_keys(config['password'])
+
 driver.find_element_by_id("loginButton").click()
 
 driver.maximize_window()
