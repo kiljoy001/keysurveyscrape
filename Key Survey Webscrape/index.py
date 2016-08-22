@@ -117,10 +117,10 @@ def inner_loop():
                             csvClick.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
-                                javaCheck = WebDriverWait(driver, 20).until(
+                                javaCheck = WebDriverWait(driver, 30).until(
                                     EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                                 if javaCheck:
-                                    checkagain = WebDriverWait(driver, 20).until(
+                                    checkagain = WebDriverWait(driver, 30).until(
                                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                                     if checkagain:
                                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
@@ -130,6 +130,12 @@ def inner_loop():
                                             continue
                                         else:
                                             time.sleep(10)  # delay for 10 seconds
+                                            if check_url(urlstore, driver):
+                                                checklink = WebDriverWait(driver, 5).until(
+                                                EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                                if checklink:
+                                                    ActionChains(driver).move_to_element(checklink).click(
+                                                        checklink).perform()
                                             continue
 
 
