@@ -133,7 +133,7 @@ def inner_loop():
                                             if check_url(urlstore, driver):
                                                 checklink = WebDriverWait(driver, 5).until(
                                                 EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                                if checklink:
+                                                if checklink and check_jquery():
                                                     ActionChains(driver).move_to_element(checklink).click(
                                                         checklink).perform()
                                             continue
@@ -143,15 +143,15 @@ def configFile():
     """loads configuration yaml info from a yaml file Must specify path to file in raw text.
         :return dictionary
     """
-    with open(r'C:\Users\Scott\PycharmProjects\keysurveyscrape2\config.yaml') as f:
+    #location of the .yaml file changes with the folder position
+    with open(r'C:\Users\Scott\PycharmProjects\Work Project\config.yaml') as f:
         return yaml.load(f)
 
 
 config = configFile()
 chrome_path = Options()
-chrome_path.binary_location = config['binarylocation']
-driver = webdriver.Chrome(executable_path=config['driverpath'])
-                          # chrome_options=chrome_path)
+chrome_path.binary_location = None  # config['altbase']
+driver = webdriver.Chrome(chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
