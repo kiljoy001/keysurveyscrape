@@ -10,16 +10,22 @@ import yaml
 
 def check_url(urlStore, WebDriver):
     """
-    Compares input url to current url
+    Compares input url to current url, splits url if there is a ? character in it.
     :param urlStore:
     :return: boolean
     """
     currentURL = WebDriver.current_url
-    if currentURL == urlStore:
-        return True
+    if '/?' in currentURL:
+        processURL = currentURL.split('/?')
+        if processURL[0] in urlStore:
+            return True
+        else:
+            return False
     else:
-        return False
-
+        if currentURL == urlstore:
+            return True
+        else:
+            return False
 
 def execute_xpath(WebDriver, string):
     """
@@ -52,7 +58,7 @@ def check_jquery():
     Check if jquery is active on page
     :return: boolean
     """
-    check = WebDriverWait(driver, 20).until(lambda s: s.execute_script("return jQuery.active == 0"))
+    check = WebDriverWait(driver, 30).until(lambda s: s.execute_script("return jQuery.active == 0"))
     if check:
         result = True
     else:
@@ -113,7 +119,6 @@ def inner_loop():
                         if check_jquery():
                             csvClick = WebDriverWait(driver, 5).until(
                                 EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                            urlstore = driver.current_url
                             csvClick.click()
                             if check_jquery():
                                 driver.execute_script("downloadExportWithLink(3,4);")
@@ -126,11 +131,11 @@ def inner_loop():
                                         reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
                                         ActionChains(driver).move_to_element(reportsLink).click(
                                             reportsLink).perform()
-                                        if not check_url(urlstore, driver):
+                                        if check_url(urlstore, driver):
                                             continue
                                         else:
                                             time.sleep(10)  # delay for 10 seconds
-                                            if check_url(urlstore, driver):
+                                            if not check_url(urlstore, driver):
                                                 checklink = WebDriverWait(driver, 5).until(
                                                 EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                                                 if checklink and check_jquery():
@@ -175,5 +180,6 @@ while loop:
         if elecontainer[accum].is_displayed():
             ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
             if check_jquery():
+                urlstore = driver.current_url
                 inner_loop()
         accum += 1
