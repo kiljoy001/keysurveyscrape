@@ -10,7 +10,7 @@ import yaml
 
 def check_url(urlStore, WebDriver):
     """
-    Compares input url to current url, splits url if there is a ? character in it.
+    Compares input url to current url, splits url if there is a /? characters in it.
     :param urlStore:
     :return: boolean
     """
@@ -149,7 +149,7 @@ def configFile():
         :return dictionary
     """
     #location of the .yaml file changes with the folder position
-    with open(r'C:\Users\Scott\PycharmProjects\Work Project\config.yaml') as f:
+    with open(r'config.yaml') as f:
         return yaml.load(f)
 
 
