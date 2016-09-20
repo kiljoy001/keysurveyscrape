@@ -220,5 +220,7 @@ try:
                 urlstore = driver.current_url
                 inner_loop()
         accum += 1
+except StaleElementReferenceException:
+    record_place()
 except Exception:
     record_place()
