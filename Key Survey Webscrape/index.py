@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 import time
 import yaml
+import os
 
 def check_url(urlStore, WebDriver):
     """
@@ -51,6 +52,40 @@ def execute_css(WebDriver, string):
         EC.element_to_be_clickable((By.CSS_SELECTOR, string)))
     element.click()
     return
+
+
+def check_for_record():
+    """
+    checks if there is a record file, if it exists load number into global accum variable
+    :return:
+    """
+    global accum
+    if accum is 1:
+        if os.path.isfile('record.txt'):
+            with open('record.txt', 'r') as number:
+                accum = number.read()
+                number.close()
+            return accum
+    else:
+        pass
+
+
+
+def record_place():
+    """
+    Records object number to record.txt, to be used on crashes for restarting the script as a place holder.
+    :return:
+    """
+    global accum
+    objnumber = accum
+    if not os.path.isfile('record.txt'):
+        with open('record.txt', 'w') as file:
+            file.write(objnumber)
+            file.close()
+    else:
+        with open('record.txt', 'w') as file:
+            file.write(objnumber)
+            file.close()
 
 
 def check_jquery():
@@ -148,15 +183,15 @@ def configFile():
     """loads configuration yaml info from a yaml file Must specify path to file in raw text.
         :return dictionary
     """
-    #location of the .yaml file changes with the folder position
+# location of the .yaml file changes with the folder position
     with open(r'config.yaml') as f:
         return yaml.load(f)
 
 
 config = configFile()
 chrome_path = Options()
-chrome_path.binary_location = None  # config['altbase']
-driver = webdriver.Chrome(chrome_options=chrome_path)
+chrome_path.binary_location = config['driverpath']
+driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
@@ -170,9 +205,11 @@ driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
 execute_xpath(driver, "//*[@id='main']")
 accum = 1
+check_for_record()
 loop = True
 
-while loop:
+try:
+    while loop:
         open_folders()
         drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
         elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
@@ -183,3 +220,5 @@ while loop:
                 urlstore = driver.current_url
                 inner_loop()
         accum += 1
+except Exception:
+    record_place()
