@@ -80,11 +80,14 @@ def record_place():
     objnumber = accum
     if not os.path.isfile('record.txt'):
         with open('record.txt', 'w') as file:
-            file.write(objnumber)
-            file.close()
+            if file.read() < accum:
+                file.write(str(objnumber))
+                file.close()
+            else:
+                print('Files downloaded are greater than the last attempt, record not saved.')
     else:
         with open('record.txt', 'w') as file:
-            file.write(objnumber)
+            file.write(str(objnumber))
             file.close()
 
 
