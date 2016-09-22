@@ -64,3 +64,7 @@ target/
 
 #Yaml Secrets
 config.yaml
+/Key Survey Webscrape/config.yaml
+
+#record file
+/Key Survey Webscrape/record.txt
