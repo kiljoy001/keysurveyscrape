@@ -78,9 +78,9 @@ def record_place():
     """
     global accum
     objnumber = accum
-    if not os.path.isfile('record.txt'):
+    if os.path.isfile('record.txt'):
         with open('record.txt', 'w') as file:
-            if file.read() < accum:
+            if int(file.read()) < accum:
                 file.write(str(objnumber))
                 file.close()
             else:
