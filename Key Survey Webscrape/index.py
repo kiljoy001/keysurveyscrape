@@ -210,11 +210,11 @@ execute_xpath(driver, "//*[@id='main']")
 accum = 1
 check_for_record()
 loop = True
-
+global elecontainer
 try:
     while loop:
         open_folders()
-        drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        # drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']") //not sure wtf this is doing here.
         elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
         map(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), elecontainer)
         if elecontainer[accum].is_displayed():
@@ -226,6 +226,10 @@ try:
 except StaleElementReferenceException as stale:
     record_place()
     print(stale)
+    print("accum is: " + accum)
+    print("length of list is " + len(elecontainer))
 except Exception as e:
     record_place()
     print(e)
+    print("accum is: " + str(accum))
+    print("length of list is " + len(elecontainer))
