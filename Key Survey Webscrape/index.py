@@ -63,7 +63,7 @@ def check_for_record():
     if accum is 1:
         if os.path.isfile('record.txt'):
             with open('record.txt', 'r') as number:
-                accum = number.read()
+                accum = int(number.read())
                 number.close()
             return accum
     else:
@@ -79,8 +79,8 @@ def record_place():
     global accum
     objnumber = accum
     if os.path.isfile('record.txt'):
-        with open('record.txt', 'w') as file:
-            if int(file.read()) < accum:
+        with open('record.txt', 'r+') as file:
+            if int(file.read()) < int(accum):
                 file.write(str(objnumber))
                 file.close()
             else:
@@ -223,7 +223,9 @@ try:
                 urlstore = driver.current_url
                 inner_loop()
         accum += 1
-except StaleElementReferenceException:
+except StaleElementReferenceException as stale:
     record_place()
-except Exception:
+    print(stale)
+except Exception as e:
     record_place()
+    print(e)
