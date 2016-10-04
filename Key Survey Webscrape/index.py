@@ -81,8 +81,10 @@ def record_place():
     if os.path.isfile('record.txt'):
         with open('record.txt', 'r+') as file:
             if int(file.read()) < int(accum):
-                file.write(str(objnumber))
                 file.close()
+                with open('record.txt', 'w+') as f:
+                    f.write(str(objnumber))
+                    f.close()
             else:
                 print('Files downloaded are greater than the last attempt, record not saved.')
     else:
@@ -214,9 +216,9 @@ global elecontainer
 try:
     while loop:
         open_folders()
-        # drSurveys = driver.find_elements_by_xpath("//*[@data-rights='16711680']") //not sure wtf this is doing here.
-        elecontainer = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-        map(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), elecontainer)
+        # elecontainer = create_list(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), lambda: driver.find_elements_by_xpath("//*[data-rights='16777215']"))
+        elecontainer = driver.find_elements_by_css_selector("a[data-rights^='167']")
+        map(lambda: driver.find_elements_by_css_selector("a[data-rights^='167']"), elecontainer)
         if elecontainer[accum].is_displayed():
             ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
             if check_jquery():
@@ -227,9 +229,9 @@ except StaleElementReferenceException as stale:
     record_place()
     print(stale)
     print("accum is: " + accum)
-    print("length of list is " + len(elecontainer))
+    print("length of list is ", len(elecontainer))
 except Exception as e:
     record_place()
     print(e)
     print("accum is: " + str(accum))
-    print("length of list is " + len(elecontainer))
+    print("length of list is ", len(elecontainer))
