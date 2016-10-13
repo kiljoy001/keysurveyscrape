@@ -145,6 +145,14 @@ def create_list(drFolder, drSurveys):
         combined.append(stuff2)
     return combined
 
+def download_pdf(surveyNumber, reportNumber):
+    """finds the download pdf link & sends download pdf command to javascript API"""
+    if check_jquery():
+        pdfClick = WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
+        pdfClick.click()
+        if check_jquery():
+            driver.execute_script()
 
 def inner_loop():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
