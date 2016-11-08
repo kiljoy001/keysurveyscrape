@@ -163,10 +163,14 @@ def listAll(reportnum, surveynum, reportname, foldername):
     """Gets report name, folder name and saves it to a file"""
     if os.path.isfile('names.txt'):
         with open('names.txt', 'a+') as file:
-            file.write("report:{0}, survey:{1}, report name:{3}, folder:{4},\n".format(reportnum, surveynum, reportname,
-                                                                                      foldername))
+            file.write("report:{0}, survey:{1}, report name:{2}, folder:{3},\n".format(reportnum, surveynum, reportname,
+                                                                                       foldername))
             file.close()
-
+    else:
+        with open('names.txt', 'w') as createfile:
+            createfile.write("report:{0}, survey:{1}, report name:{2}, folder:{3},\n".format(reportnum, surveynum,
+                                                                                             reportname, foldername))
+            createfile.close();
 
 def inner_loop():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
@@ -176,8 +180,12 @@ def inner_loop():
     check_jquery()
     for unit in range(1, subIndex + 1):
         if check_jquery() and unit > 0:
-                        driver.find_element_by_css_selector(css_path.format(unit)).click()
+                        getname = driver.find_element_by_css_selector(css_path.format(unit)).text
+                        getfolder = driver.find_element_by_css_selector('#folderNameLabel')
                         reports = get_report_number(driver.current_url)
+                        listAll(reports[1], reports[0], getname, getfolder)
+                        driver.find_element_by_css_selector(css_path.format(unit)).click()
+
                         # download loop for pdf
                         if check_jquery():
                             pdfClick = WebDriverWait(driver, 5, .25).until(
