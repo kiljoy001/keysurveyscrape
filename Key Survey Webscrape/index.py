@@ -19,7 +19,8 @@ def check_url(urlStore, WebDriver):
     :return: boolean
     """
     currentURL = WebDriver.current_url
-    if '/?' in currentURL:
+    substring = '/?'
+    if substring in currentURL:
         processURL = currentURL.split('/?')
         if processURL[0] in urlStore:
             return True
@@ -181,11 +182,10 @@ def inner_loop():
     for unit in range(1, subIndex + 1):
         if check_jquery() and unit > 0:
                         getname = driver.find_element_by_css_selector(css_path.format(unit)).text
-                        getfolder = driver.find_element_by_css_selector('#folderNameLabel')
+                        getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
+                        driver.find_element_by_css_selector(css_path.format(unit)).click()
                         reports = get_report_number(driver.current_url)
                         listAll(reports[1], reports[0], getname, getfolder)
-                        driver.find_element_by_css_selector(css_path.format(unit)).click()
-
                         # download loop for pdf
                         if check_jquery():
                             pdfClick = WebDriverWait(driver, 5, .125).until(
@@ -195,9 +195,9 @@ def inner_loop():
                                 command = "pressedPrint({0},{1})"
                                 try:
                                     driver.execute_script(command.format(reports[0], reports[1]))
-                                    time.sleep(10)  # delay added to allow the download to begin
-                                    driver.switch_to.alert.accept()
-                                    continue
+                                    time.sleep(15)  # delay added to allow the download to begin
+                                    # driver.switch_to.alert.accept()
+                                    # continue
                                 except NoAlertPresentException:
                                     pass
                                 except UnexpectedAlertPresentException:
