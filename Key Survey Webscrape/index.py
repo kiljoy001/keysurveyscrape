@@ -32,6 +32,7 @@ def check_url(urlStore, WebDriver):
         else:
             return False
 
+
 def execute_xpath(WebDriver, string):
     """
     Click on passed xpath element
@@ -72,7 +73,6 @@ def check_for_record():
             return accum
     else:
         pass
-
 
 
 def record_place():
@@ -149,6 +149,7 @@ def create_list(drFolder, drSurveys):
         combined.append(stuff2)
     return combined
 
+
 def get_report_number(urlstore):
     """rips report and survey number from url and returns it as substring"""
     if check_jquery():
@@ -173,6 +174,7 @@ def listAll(reportnum, surveynum, reportname, foldername):
                                                                                              reportname, foldername))
             createfile.close()
 
+
 def inner_loop():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
@@ -181,118 +183,122 @@ def inner_loop():
     check_jquery()
     for unit in range(1, subIndex + 1):
         if check_jquery() and unit > 0:
-                        getname = driver.find_element_by_css_selector(css_path.format(unit)).text
-                        getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
-                        driver.find_element_by_css_selector(css_path.format(unit)).click()
-                        reports = get_report_number(driver.current_url)
-                        listAll(reports[1], reports[0], getname, getfolder)
-                        # download loop for pdf
-                        if check_jquery():
-                            pdfClick = WebDriverWait(driver, 5, .125).until(
-                                EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
-                            pdfClick.click()
-                            if check_jquery():
-                                command = "pressedPrint({0},{1})"
-                                try:
-                                    driver.execute_script(command.format(reports[0], reports[1]))
-                                    time.sleep(15)  # delay added to allow the download to begin
-                                    # driver.switch_to.alert.accept()
-                                    # continue
-                                except NoAlertPresentException:
-                                    pass
-                                except UnexpectedAlertPresentException:
-                                    driver.switch_to.alert.accept()
-                                javaCheck = WebDriverWait(driver, 30, .125).until(
-                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                if javaCheck:
-                                    checkagain = WebDriverWait(driver, 30, .125).until(
-                                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                    if checkagain:
-                                        reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
-                                        ActionChains(driver).move_to_element(reportsLink).click(
-                                            reportsLink).perform()
-                                        if check_url(urlstore, driver):
-                                            # download loop for csv
-                                            if check_jquery():
-                                                csvClick = WebDriverWait(driver, 5, .125).until(
-                                                    EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                                                csvClick.click()
-                                                if check_jquery():
-                                                    driver.execute_script("downloadExportWithLink(3,4);")
-                                                    javaCheck = WebDriverWait(driver, 30, .125).until(
-                                                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                                    if javaCheck:
-                                                        checkagain = WebDriverWait(driver, 30, .125).until(
+            getname = driver.find_element_by_css_selector(css_path.format(unit)).text
+            getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
+            driver.find_element_by_css_selector(css_path.format(unit)).click()
+            reports = get_report_number(driver.current_url)
+            listAll(reports[1], reports[0], getname, getfolder)
+            # download loop for pdf
+            if check_jquery():
+                pdfClick = WebDriverWait(driver, 5, .125).until(
+                    EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
+                pdfClick.click()
+                if check_jquery():
+                    command = "pressedPrint({0},{1})"
+                    # try:
+                    driver.execute_script(command.format(reports[0], reports[1]))
+                        # try:
+                        #     driver.switch_to.alert.accept()
+                        # except UnexpectedAlertPresentException:
+                        #     driver.switch_to.alert.accept()
+                        # except NoAlertPresentException:
+                        #     pass
+                        # # time.sleep(15)  # delay added to allow the download to begin
+                    #     spinner = driver.find_element_by_id("imgSpinner")
+                    #     WebDriverWait(driver, 30, .125).until(EC._element_if_visible(driver.find_element_by_id("imgSpinner")))
+                    #     while spinner.is_displayed():
+                    #         pass
+                    # except NoAlertPresentException:
+                    #     pass
+                    javaCheck = WebDriverWait(driver, 30, .125).until(
+                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                    if javaCheck:
+                        checkagain = WebDriverWait(driver, 30, .125).until(
+                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                        if checkagain:
+                            reportsLink = driver.find_element_by_xpath("//*[@id='emptySel']/a")
+                            ActionChains(driver).move_to_element(reportsLink).click(
+                                reportsLink).perform()
+                            if check_url(urlstore, driver):
+                                # download loop for csv
+                                if check_jquery():
+                                    csvClick = WebDriverWait(driver, 5, .125).until(
+                                        EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                                    csvClick.click()
+                                    if check_jquery():
+                                        driver.execute_script("downloadExportWithLink(3,4);")
+                                        javaCheck = WebDriverWait(driver, 30, .125).until(
+                                            EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                        if javaCheck:
+                                            checkagain = WebDriverWait(driver, 30, .125).until(
+                                                EC.element_to_be_clickable(
+                                                    (By.XPATH, "//*[@id='emptySel']/a")))
+                                            if checkagain:
+                                                reportsLink = driver.find_element_by_xpath(
+                                                    "//*[@id='emptySel']/a")
+                                                ActionChains(driver).move_to_element(reportsLink).click(
+                                                    reportsLink).perform()
+                                                if check_url(urlstore, driver):
+                                                    continue
+                                                else:
+                                                    time.sleep(10)  # delay for 10 seconds
+                                                    if not check_url(urlstore, driver):
+                                                        checklink = WebDriverWait(driver, 5, .125).until(
                                                             EC.element_to_be_clickable(
                                                                 (By.XPATH, "//*[@id='emptySel']/a")))
-                                                        if checkagain:
-                                                            reportsLink = driver.find_element_by_xpath(
-                                                                "//*[@id='emptySel']/a")
-                                                            ActionChains(driver).move_to_element(reportsLink).click(
-                                                                reportsLink).perform()
-                                                            if check_url(urlstore, driver):
-                                                                continue
-                                                            else:
-                                                                time.sleep(10)  # delay for 10 seconds
-                                                                if not check_url(urlstore, driver):
-                                                                    checklink = WebDriverWait(driver, 5, .125).until(
-                                                                        EC.element_to_be_clickable(
-                                                                            (By.XPATH, "//*[@id='emptySel']/a")))
-                                                                    if checklink and check_jquery():
-                                                                        ActionChains(driver).move_to_element(
-                                                                            checklink).click(
-                                                                            checklink).perform()
-                                                                continue
-                                        else:
-                                            time.sleep(10)  # delay for 10 seconds
-                                            if not check_url(urlstore, driver):
-                                                checklink = WebDriverWait(driver, 5, .125).until(
-                                                    EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
-                                                if checklink and check_jquery():
-                                                    ActionChains(driver).move_to_element(checklink).click(
-                                                        checklink).perform()
-                                                    # download loop for csv
-                                                    if check_jquery():
-                                                        csvClick = WebDriverWait(driver, 5, .125).until(
-                                                            EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
-                                                        csvClick.click()
-                                                        if check_jquery():
-                                                            driver.execute_script("downloadExportWithLink(3,4);")
-                                                            javaCheck = WebDriverWait(driver, 30, .125).until(
-                                                                EC.element_to_be_clickable(
-                                                                    (By.XPATH, "//*[@id='emptySel']/a")))
-                                                            if javaCheck:
-                                                                checkagain = WebDriverWait(driver, 30, .125).until(
-                                                                    EC.element_to_be_clickable(
-                                                                        (By.XPATH, "//*[@id='emptySel']/a")))
-                                                                if checkagain:
-                                                                    reportsLink = driver.find_element_by_xpath(
-                                                                        "//*[@id='emptySel']/a")
+                                                        if checklink and check_jquery():
+                                                            ActionChains(driver).move_to_element(
+                                                                checklink).click(
+                                                                checklink).perform()
+                                                    continue
+                            else:
+                                time.sleep(10)  # delay for 10 seconds
+                                if not check_url(urlstore, driver):
+                                    checklink = WebDriverWait(driver, 5, .125).until(
+                                        EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
+                                    if checklink and check_jquery():
+                                        ActionChains(driver).move_to_element(checklink).click(
+                                            checklink).perform()
+                                        # download loop for csv
+                                        if check_jquery():
+                                            csvClick = WebDriverWait(driver, 5, .125).until(
+                                                EC.element_to_be_clickable((By.LINK_TEXT, "Export to CSV")))
+                                            csvClick.click()
+                                            if check_jquery():
+                                                driver.execute_script("downloadExportWithLink(3,4);")
+                                                javaCheck = WebDriverWait(driver, 30, .125).until(
+                                                    EC.element_to_be_clickable(
+                                                        (By.XPATH, "//*[@id='emptySel']/a")))
+                                                if javaCheck:
+                                                    checkagain = WebDriverWait(driver, 30, .125).until(
+                                                        EC.element_to_be_clickable(
+                                                            (By.XPATH, "//*[@id='emptySel']/a")))
+                                                    if checkagain:
+                                                        reportsLink = driver.find_element_by_xpath(
+                                                            "//*[@id='emptySel']/a")
+                                                        ActionChains(driver).move_to_element(
+                                                            reportsLink).click(
+                                                            reportsLink).perform()
+                                                        if check_url(urlstore, driver):
+                                                            continue
+                                                        else:
+                                                            time.sleep(10)  # delay for 10 seconds
+                                                            if not check_url(urlstore, driver):
+                                                                checklink = WebDriverWait(driver, 5, .125).until(
+                                                                    EC.element_to_be_clickable((By.XPATH,
+                                                                                                "//*[@id='emptySel']/a")))
+                                                                if checklink and check_jquery():
                                                                     ActionChains(driver).move_to_element(
-                                                                        reportsLink).click(
-                                                                        reportsLink).perform()
-                                                                    if check_url(urlstore, driver):
-                                                                        continue
-                                                                    else:
-                                                                        time.sleep(10)  # delay for 10 seconds
-                                                                        if not check_url(urlstore, driver):
-                                                                            checklink = WebDriverWait(driver, 5, .125).until(
-                                                                                EC.element_to_be_clickable((By.XPATH,
-                                                                                            "//*[@id='emptySel']/a")))
-                                                                            if checklink and check_jquery():
-                                                                                ActionChains(driver).move_to_element(
-                                                                                    checklink).click(
-                                                                                    checklink).perform()
-                                                                        continue
-
-
+                                                                        checklink).click(
+                                                                        checklink).perform()
+                                                            continue
 
 
 def configFile():
     """loads configuration yaml info from a yaml file Must specify path to file in raw text.
         :return dictionary
     """
-# location of the .yaml file changes with the folder position
+    # location of the .yaml file changes with the folder position
     with open(r'config.yaml') as f:
         return yaml.load(f)
 
@@ -300,7 +306,9 @@ def configFile():
 config = configFile()
 chrome_path = Options()
 chrome_path.binary_location = config['driverpath']
-driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
+alert_handling = webdriver.DesiredCapabilities.CHROME.copy()
+alert_handling['unexpectedAlertBehaviour'] = "accept"
+driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path, desired_capabilities=alert_handling)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
@@ -334,8 +342,8 @@ except StaleElementReferenceException as stale:
     print(stale)
     print("accum is: " + accum)
     print("length of list is ", len(elecontainer))
-except Exception as e:
-    record_place()
+# except Exception as e:
+#     record_place()
 #     print(e)
-#     print("accum is: " + str(accum))
-#     print("length of list is ", len(elecontainer))
+    #     print("accum is: " + str(accum))
+    #     print("length of list is ", len(elecontainer))
