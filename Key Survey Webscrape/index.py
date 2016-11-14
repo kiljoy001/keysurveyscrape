@@ -49,7 +49,7 @@ def execute_xpath(WebDriver, string):
 def execute_css(WebDriver, string):
     """
     Click on passed xpath element
-    :param string: must be in XPath format
+    :param string: must be in CSS format
     :return: none
     """
 
@@ -194,20 +194,28 @@ def inner_loop():
                     EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
                 pdfClick.click()
                 if check_jquery():
-                    command = "pressedPrint({0},{1})"
+                    driver.find_element_by_id('printToPDF').click()
+                    WebDriverWait(driver, 60, .125).until(lambda check: check_jquery()
+                       )
+                    # command = "pressedPrint({0},{1})"
                     # try:
-                    driver.execute_script(command.format(reports[0], reports[1]))
-                        # try:
-                        #     driver.switch_to.alert.accept()
-                        # except UnexpectedAlertPresentException:
-                        #     driver.switch_to.alert.accept()
-                        # except NoAlertPresentException:
-                        #     pass
+                    # driver.execute_script(command.format(reports[0], reports[1]))
+                    #     driver.switch_to.alert.accept()
+                    # except UnexpectedAlertPresentException:
+                    #     driver.switch_to.alert.accept()
+                    # except NoAlertPresentException:
+                    # pass
                         # # time.sleep(15)  # delay added to allow the download to begin
-                    #     spinner = driver.find_element_by_id("imgSpinner")
-                    #     WebDriverWait(driver, 30, .125).until(EC._element_if_visible(driver.find_element_by_id("imgSpinner")))
-                    #     while spinner.is_displayed():
-                    #         pass
+                    # spinner = driver.find_element_by_id("imgSpinner")
+                    # WebDriverWait(driver, 5, .125).until(EC._element_if_visible(driver.find_element_by_id("imgSpinner")))
+                    # while spinner.is_displayed:
+                    #     if check_jquery():
+                    #         driver.execute_script("jQuery('#imgSpinner').hide();"
+                    #                               "var element = document.getElementById('imgSpinner');"
+                    #                               "element.parentNode.removeChild(element);"
+                    #                               )
+                    #
+                    #     pass
                     # except NoAlertPresentException:
                     #     pass
                     javaCheck = WebDriverWait(driver, 30, .125).until(
@@ -306,9 +314,9 @@ def configFile():
 config = configFile()
 chrome_path = Options()
 chrome_path.binary_location = config['driverpath']
-alert_handling = webdriver.DesiredCapabilities.CHROME.copy()
-alert_handling['unexpectedAlertBehaviour'] = "accept"
-driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path, desired_capabilities=alert_handling)
+# alert_handling = webdriver.DesiredCapabilities.CHROME.copy()
+# alert_handling['unexpectedAlertBehaviour'] = "accept"
+driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
 elePassword = driver.find_element_by_id("password")
