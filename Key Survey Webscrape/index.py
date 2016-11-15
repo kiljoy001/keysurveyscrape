@@ -10,6 +10,7 @@ from selenium.webdriver.common.alert import Alert
 import time
 import yaml
 import os
+import requests
 
 
 def check_url(urlStore, WebDriver):
@@ -175,6 +176,25 @@ def listAll(reportnum, surveynum, reportname, foldername):
             createfile.close()
 
 
+def pdf_json_check(report, survey):
+    """
+    :param report: report number of the download, accessible through the get_report_number function
+    :param survey: survey number of the download, accessible through the get_report_number function
+    :return: boolean that evaluates the json response as true or false
+    """
+    url = "https://app.keysurvey.com/app/public/export/evo/report/check/{0}/{1}?link=2?msigFromMain=1"
+    response = requests.get(url.format(survey, report))
+    data = response.json()
+    if response.status_code is not 200:
+        raise requests.ConnectionError()
+    if type(data) is dict:
+        msg_value = data.get('msg')
+        if msg_value == 'progress':
+            return False
+        else:
+            return True
+
+
 def inner_loop():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
@@ -195,7 +215,7 @@ def inner_loop():
                 pdfClick.click()
                 if check_jquery():
                     driver.find_element_by_id('printToPDF').click()
-                    WebDriverWait(driver, 60, .125).until(lambda check: check_jquery()
+                    WebDriverWait(driver, 240, 5).until(lambda check: pdf_json_check(reports[1], reports[0])
                        )
                     # command = "pressedPrint({0},{1})"
                     # try:
@@ -350,8 +370,8 @@ except StaleElementReferenceException as stale:
     print(stale)
     print("accum is: " + accum)
     print("length of list is ", len(elecontainer))
-# except Exception as e:
-#     record_place()
+except Exception as e:
+    record_place()
 #     print(e)
     #     print("accum is: " + str(accum))
     #     print("length of list is ", len(elecontainer))
