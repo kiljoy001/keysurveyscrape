@@ -155,14 +155,20 @@ def get_report_number(urlstore):
     """rips report and survey number from url and returns it as substring"""
     if check_jquery():
         # splits the entire url into two chunks
-        urlExtract = urlstore.split('/s')
-        # splits the substring chunk (the second half of the original split) further with surveyID in position 0 and
-        # report number in position 1
-        substring = str(urlExtract[1]).split('/?rid=')
-        return substring
+        if '/f' not in urlstore:
+            url_extract = urlstore.split('/s')
+            # splits the substring chunk (the second half of the original split) further with surveyID in position 0 and
+            # report number in position 1
+            substring = str(url_extract[1]).split('/?rid=')
+            return substring
+        else:
+            url_extract = urlstore.split('/f')
+            # splits the substring chunk (the second half of the original split) further with surveyID in position 0 and
+            # report number in position 1
+            substring = str(url_extract[1]).split('/?rid=')
+            return substring
 
-
-def listAll(reportnum, surveynum, reportname, foldername):
+def listAll(reportnum,surveynum,reportname,foldername):
     """Gets report name, folder name and saves it to a file"""
     if os.path.isfile('names.txt'):
         with open('names.txt', 'a+') as file:
@@ -205,8 +211,8 @@ def inner_loop():
         if check_jquery() and unit > 0:
             getname = driver.find_element_by_css_selector(css_path.format(unit)).text
             getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
-            driver.find_element_by_css_selector(css_path.format(unit)).click()
             reports = get_report_number(driver.current_url)
+            driver.find_element_by_css_selector(css_path.format(unit)).click()
             listAll(reports[1], reports[0], getname, getfolder)
             # download loop for pdf
             if check_jquery():
