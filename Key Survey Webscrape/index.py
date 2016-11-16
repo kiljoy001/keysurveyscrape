@@ -353,6 +353,6 @@ except StaleElementReferenceException as stale:
     print("length of list is ", len(elecontainer))
 except Exception as e:
     record_place()
-    print(e)
+    print(e+"\n" + e.with_traceback())
     print("accum is: " + str(accum))
     print("length of list is ", len(elecontainer))
