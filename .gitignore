@@ -68,3 +68,6 @@ config.yaml
 
 #record file
 /Key Survey Webscrape/record.txt
+/Key Survey Webscrape/names.txt
+Key Survey Webscrape/names.txt
+Key Survey Webscrape/save-record.txt

@@ -215,29 +215,10 @@ def inner_loop():
                 pdfClick.click()
                 if check_jquery():
                     driver.find_element_by_id('printToPDF').click()
-                    WebDriverWait(driver, 240, 5).until(lambda check: pdf_json_check(reports[1], reports[0])
+                    # explicit wait that checks if json returns anything other than 'progress' msg,
+                    #  long wait time added to let the file download. Currently set to 5 minutes
+                    WebDriverWait(driver, 300, 5).until(lambda check: pdf_json_check(reports[1], reports[0])
                        )
-                    # command = "pressedPrint({0},{1})"
-                    # try:
-                    # driver.execute_script(command.format(reports[0], reports[1]))
-                    #     driver.switch_to.alert.accept()
-                    # except UnexpectedAlertPresentException:
-                    #     driver.switch_to.alert.accept()
-                    # except NoAlertPresentException:
-                    # pass
-                        # # time.sleep(15)  # delay added to allow the download to begin
-                    # spinner = driver.find_element_by_id("imgSpinner")
-                    # WebDriverWait(driver, 5, .125).until(EC._element_if_visible(driver.find_element_by_id("imgSpinner")))
-                    # while spinner.is_displayed:
-                    #     if check_jquery():
-                    #         driver.execute_script("jQuery('#imgSpinner').hide();"
-                    #                               "var element = document.getElementById('imgSpinner');"
-                    #                               "element.parentNode.removeChild(element);"
-                    #                               )
-                    #
-                    #     pass
-                    # except NoAlertPresentException:
-                    #     pass
                     javaCheck = WebDriverWait(driver, 30, .125).until(
                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                     if javaCheck:
@@ -372,6 +353,6 @@ except StaleElementReferenceException as stale:
     print("length of list is ", len(elecontainer))
 except Exception as e:
     record_place()
-#     print(e)
-    #     print("accum is: " + str(accum))
-    #     print("length of list is ", len(elecontainer))
+    print(e)
+    print("accum is: " + str(accum))
+    print("length of list is ", len(elecontainer))
