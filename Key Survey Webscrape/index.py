@@ -211,8 +211,8 @@ def inner_loop():
         if check_jquery() and unit > 0:
             getname = driver.find_element_by_css_selector(css_path.format(unit)).text
             getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
-            reports = get_report_number(driver.current_url)
             driver.find_element_by_css_selector(css_path.format(unit)).click()
+            reports = get_report_number(driver.current_url)
             listAll(reports[1], reports[0], getname, getfolder)
             # download loop for pdf
             if check_jquery():
