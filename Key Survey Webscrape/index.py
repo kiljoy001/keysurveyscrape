@@ -208,19 +208,19 @@ def inner_loop():
     subIndex = len(findSub)
     check_jquery()
     for unit in range(1, subIndex + 1):
-        if check_jquery() and unit > 0:
-            getname = driver.find_element_by_css_selector(css_path.format(unit)).text
-            getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
-            driver.find_element_by_css_selector(css_path.format(unit)).click()
-            reports = get_report_number(driver.current_url)
-            listAll(reports[1], reports[0], getname, getfolder)
+        try:
+            if check_jquery() and unit > 0:
+                getname = driver.find_element_by_css_selector(css_path.format(unit)).text
+                getfolder = driver.find_element_by_css_selector('#folderNameLabel').text
+                driver.find_element_by_css_selector(css_path.format(unit)).click()
+                reports = get_report_number(driver.current_url)
+                listAll(reports[1], reports[0], getname, getfolder)
             # download loop for pdf
-            if check_jquery():
-                pdfClick = WebDriverWait(driver, 5, .125).until(
-                    EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
-                pdfClick.click()
                 if check_jquery():
-                    try:
+                    pdfClick = WebDriverWait(driver, 5, .125).until(
+                        EC.element_to_be_clickable((By.LINK_TEXT, "Print to PDF")))
+                    pdfClick.click()
+                    if check_jquery():
                         driver.find_element_by_id('printToPDF').click()
                         # explicit wait that checks if json returns anything other than 'progress' msg,
                         # long wait time added to let the file download. Currently set to 5 minutes
@@ -234,8 +234,6 @@ def inner_loop():
                         except NoAlertPresentException:
                             pass
                         WebDriverWait(driver, 300, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
-                    except UnexpectedAlertPresentException:
-                        driver.switch_to.alert().accept()
                     javaCheck = WebDriverWait(driver, 30, .125).until(
                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                     if javaCheck:
@@ -318,6 +316,8 @@ def inner_loop():
                                                                         checklink).click(
                                                                         checklink).perform()
                                                             continue
+        except UnexpectedAlertPresentException:
+            driver.switch_to.alert().accept()
 
 
 def configFile():
