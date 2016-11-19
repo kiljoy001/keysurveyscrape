@@ -189,16 +189,23 @@ def pdf_json_check(report, survey):
     :return: boolean that evaluates the json response as true or false
     """
     url = "https://app.keysurvey.com/app/public/export/evo/report/check/{0}/{1}?link=2?msigFromMain=1"
+    makeurl ="https://app.keysurvey.com/app/public/export/evo/report/make/{0}/{1}?msigFromMain=" \
+             "1&pageOrientation=0&colorMode=0"
+    requests.get(makeurl.format(survey, report))
     response = requests.get(url.format(survey, report))
     data = response.json()
+    for error, msg in data.items():
+        print(error, msg)
     if response.status_code is not 200:
         raise requests.ConnectionError()
-    if type(data) is dict:
-        msg_value = data.get('msg')
-        if msg_value == 'progress':
-            return False
-        else:
-            return True
+    msg_value = data.get('msg')
+    if msg_value == 'finish' or 'report' in msg_value:
+        print('true')
+        print(msg_value)
+        return True
+    else:
+        print('false')
+        return False
 
 
 def inner_loop():
@@ -224,16 +231,7 @@ def inner_loop():
                         driver.find_element_by_id('printToPDF').click()
                         # explicit wait that checks if json returns anything other than 'progress' msg,
                         # long wait time added to let the file download. Currently set to 5 minutes
-                        # additional try/except block added to try to click on the unexpected alert popups boxes, passes
-                        # if no box shows in five seconds
-                        try:
-                            WebDriverWait(driver, 5).until(EC.alert_is_present())
-                            driver.switch_to.alert().accept()
-                        except TimeoutException:
-                            pass
-                        except NoAlertPresentException:
-                            pass
-                        WebDriverWait(driver, 300, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
+                    WebDriverWait(driver, 300, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
                     javaCheck = WebDriverWait(driver, 30, .125).until(
                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                     if javaCheck:
@@ -317,7 +315,9 @@ def inner_loop():
                                                                         checklink).perform()
                                                             continue
         except UnexpectedAlertPresentException:
-            driver.switch_to.alert().accept()
+            driver.switch_to.alert.accept()
+           # continue
+
 
 
 def configFile():
