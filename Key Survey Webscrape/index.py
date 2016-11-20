@@ -1,3 +1,5 @@
+import traceback
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, \
     NoAlertPresentException, UnexpectedAlertPresentException
@@ -189,9 +191,6 @@ def pdf_json_check(report, survey):
     :return: boolean that evaluates the json response as true or false
     """
     url = "https://app.keysurvey.com/app/public/export/evo/report/check/{0}/{1}?link=2?msigFromMain=1"
-    makeurl ="https://app.keysurvey.com/app/public/export/evo/report/make/{0}/{1}?msigFromMain=" \
-             "1&pageOrientation=0&colorMode=0"
-    requests.get(makeurl.format(survey, report))
     response = requests.get(url.format(survey, report))
     data = response.json()
     for error, msg in data.items():
@@ -231,7 +230,13 @@ def inner_loop():
                         driver.find_element_by_id('printToPDF').click()
                         # explicit wait that checks if json returns anything other than 'progress' msg,
                         # long wait time added to let the file download. Currently set to 5 minutes
-                    WebDriverWait(driver, 300, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
+                    try:
+                        makeurl = "https://app.keysurvey.com/app/public/export/evo/report/make/{0}/{1}?msigFromMain=" \
+                                  "1&pageOrientation=0&colorMode=0"
+                        requests.get(makeurl.format(reports[0], reports[1]))
+                        WebDriverWait(driver, 150, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
+                    except TimeoutException:
+                        pass
                     javaCheck = WebDriverWait(driver, 30, .125).until(
                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
                     if javaCheck:
@@ -370,6 +375,6 @@ except StaleElementReferenceException as stale:
     print("length of list is ", len(elecontainer))
 except Exception as e:
     record_place()
-    print(e+"\n" + e.with_traceback())
+    traceback.print_exc()
     print("accum is: " + str(accum))
     print("length of list is ", len(elecontainer))
