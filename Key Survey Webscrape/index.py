@@ -234,7 +234,7 @@ def inner_loop():
                         makeurl = "https://app.keysurvey.com/app/public/export/evo/report/make/{0}/{1}?msigFromMain=" \
                                   "1&pageOrientation=0&colorMode=0"
                         requests.get(makeurl.format(reports[0], reports[1]))
-                        WebDriverWait(driver, 150, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
+                        WebDriverWait(driver, 180, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
                     except TimeoutException:
                         pass
                     javaCheck = WebDriverWait(driver, 30, .125).until(
