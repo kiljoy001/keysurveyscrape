@@ -236,6 +236,7 @@ def inner_loop():
                         requests.get(makeurl.format(reports[0], reports[1]))
                         WebDriverWait(driver, 180, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
                     except TimeoutException:
+                        WebDriverWait(driver, 90, 5).until(lambda check: pdf_json_check(reports[1], reports[0]))
                         pass
                     javaCheck = WebDriverWait(driver, 30, .125).until(
                         EC.element_to_be_clickable((By.XPATH, "//*[@id='emptySel']/a")))
