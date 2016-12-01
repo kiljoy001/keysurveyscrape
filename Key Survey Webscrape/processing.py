@@ -10,6 +10,6 @@ def get_list():
             file.close()
         fileout = open('filterednames.txt', 'w')
         for item in filtered:
-            fileout.write('%s/n' % item)
+            fileout.write('%s\n' % item)
         fileout.close()
 

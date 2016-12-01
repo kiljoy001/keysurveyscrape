@@ -13,6 +13,7 @@ import time
 import yaml
 import os
 import requests
+import processing
 
 
 def check_url(urlStore, WebDriver):
@@ -374,6 +375,11 @@ except StaleElementReferenceException as stale:
     print(stale)
     print("accum is: " + accum)
     print("length of list is ", len(elecontainer))
+except IndexError:
+    if accum == 489:
+        processing.get_list()
+    else:
+        record_place()
 except Exception as e:
     record_place()
     traceback.print_exc()
