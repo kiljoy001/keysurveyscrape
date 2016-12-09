@@ -378,6 +378,7 @@ except StaleElementReferenceException as stale:
 except IndexError:
     if accum == 489:
         processing.get_list()
+        processing.get_unique_surveys()
     else:
         record_place()
 except Exception as e:
