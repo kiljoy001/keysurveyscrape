@@ -1,5 +1,9 @@
 import os
 import re
+import index
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+
 from collections import Counter
 def get_list():
     if os.path.isfile('names.txt'):
@@ -34,5 +38,40 @@ def get_unique_surveys():
             fileout.write('{0} number:{1}\n'.format(k, v))
         fileout.close()
 
- #get_list()
+        def open_folders():
+            """crawls through keysurvey folder list and opens all folders"""
+            index.check_jquery()
+            if index.check_jquery():
+                folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
+                index.check_jquery()
+            if index.check_jquery():
+                for unit in range(len(folderTree)):
+                    index.check_jquery()
+                    if index.check_jquery():
+                        if folderTree[unit].is_displayed() and folderTree[unit].get_attribute(
+                                "class") == "surveyFolderOpen":
+                            continue
+                        else:
+                            ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
+                test = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+                test2 = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+                combined = []
+                for stuff in test:
+                    combined.append(stuff)
+                for stuff2 in test2:
+                    combined.append(stuff2)
+                for each2 in range(len(combined)):
+                    index.check_jquery()
+                    if index.check_jquery():
+                        if combined[each2].is_displayed() and combined[each2].get_attribute(
+                                "class") == "surveyFolderOpen":
+                            continue
+                        else:
+                            ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
+
+
 get_unique_surveys()
+config = index.configFile()
+chrome_path = index.Options()
+chrome_path.binary_location = config['driverpath']
+driver = webdriver.Chrome(executable_path=config['altdriver'],
