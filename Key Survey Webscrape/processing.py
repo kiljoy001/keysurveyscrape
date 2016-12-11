@@ -21,15 +21,18 @@ def get_unique_surveys():
             text = file.read()
             surveylist = []
             surveydictionary = {}
-            for item in text:
-                surveyno = re.search('survey:\d\d\d\d\d\d', item)
-                surveylist.append(surveyno)
-                get_unique = set(surveylist)
-                for each in get_unique:
-                    surveydictionary[each] = Counter(surveylist).values()
-        # write out results with key value pairs representing the survey and how many times it shows up in the list
-            file.close()
-            fileout = open('surveys.txt', 'r+')
-            for k,v in surveydictionary.items():
-                fileout.write('{0} number:{1}\n'.format(k, v))
-            fileout.close()
+            surveyno = re.findall('survey:\d\d\d\d\d\d', text)
+            surveylist.append(surveyno)
+
+            get_unique = set(surveyno)
+            for each in get_unique:
+                surveydictionary[each] = surveyno.count(each)
+                # write out results with key value pairs representing the survey and how many times it shows up in the list
+        file.close()
+        fileout = open('surveys.txt', 'w')
+        for k, v in surveydictionary.items():
+            fileout.write('{0} number:{1}\n'.format(k, v))
+        fileout.close()
+
+ #get_list()
+get_unique_surveys()
