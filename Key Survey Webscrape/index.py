@@ -339,8 +339,6 @@ def configFile():
 config = configFile()
 chrome_path = Options()
 chrome_path.binary_location = config['driverpath']
-# alert_handling = webdriver.DesiredCapabilities.CHROME.copy()
-# alert_handling['unexpectedAlertBehaviour'] = "accept"
 driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
 eleUsername = driver.find_element_by_id("login")
@@ -361,7 +359,6 @@ global elecontainer
 try:
     while loop:
         open_folders()
-        # elecontainer = create_list(lambda: driver.find_elements_by_xpath("//*[@data-rights='16711680']"), lambda: driver.find_elements_by_xpath("//*[data-rights='16777215']"))
         elecontainer = driver.find_elements_by_css_selector("a[data-rights^='167']")
         map(lambda: driver.find_elements_by_css_selector("a[data-rights^='167']"), elecontainer)
         if elecontainer[accum].is_displayed():

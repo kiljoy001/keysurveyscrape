@@ -4,7 +4,7 @@ import index
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 
-from collections import Counter
+
 def get_list():
     if os.path.isfile('names.txt'):
         with open('names.txt', 'r+') as file:
@@ -39,7 +39,8 @@ def get_unique_surveys():
         fileout.close()
 
         def open_folders():
-            """crawls through keysurvey folder list and opens all folders"""
+            """crawls through folder list, returns list of folders crawled in a list"""
+            grab_text = []
             index.check_jquery()
             if index.check_jquery():
                 folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
@@ -53,25 +54,22 @@ def get_unique_surveys():
                             continue
                         else:
                             ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
-                test = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
-                test2 = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
-                combined = []
-                for stuff in test:
-                    combined.append(stuff)
-                for stuff2 in test2:
-                    combined.append(stuff2)
-                for each2 in range(len(combined)):
+                            grab_text.append(folderTree[unit].text)
+                folders = driver.find_elements_by_css_selector("a[data-rights^='167']")
+                for each2 in range(len(folders)):
                     index.check_jquery()
                     if index.check_jquery():
-                        if combined[each2].is_displayed() and combined[each2].get_attribute(
+                        if folders[each2].is_displayed() and folders[each2].get_attribute(
                                 "class") == "surveyFolderOpen":
                             continue
                         else:
-                            ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
+                            ActionChains(driver).move_to_element(folders[each2]).click(folders[each2]).perform()
+                            grab_text.append(folders[each2].text)
+            return grab_text
 
 
 get_unique_surveys()
 config = index.configFile()
 chrome_path = index.Options()
 chrome_path.binary_location = config['driverpath']
-driver = webdriver.Chrome(executable_path=config['altdriver'],
+driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
