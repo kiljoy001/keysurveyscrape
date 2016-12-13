@@ -326,7 +326,6 @@ def inner_loop():
            # continue
 
 
-
 def configFile():
     """loads configuration yaml info from a yaml file Must specify path to file in raw text.
         :return dictionary
