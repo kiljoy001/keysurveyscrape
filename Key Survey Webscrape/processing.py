@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+
 def check_jquery():
     """
     Check if jquery is active on page
@@ -64,7 +65,9 @@ def configFile():
 
 def record_folders():
     """crawls through folder list, returns list of folders crawled in a list"""
+    # temp storage
     grab_text = []
+    # crawl through
     check_jquery()
     if check_jquery():
         folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
@@ -89,8 +92,19 @@ def record_folders():
                 else:
                     ActionChains(driver).move_to_element(folders[each2]).click(folders[each2]).perform()
                     grab_text.append(folders[each2].text)
-    return grab_text
+    # write out to file
+    with open('folderlist.txt', 'w') as file:
+        for each in grab_text:
+            file.write('{0}\n'.format(each))
+        file.close()
 
+def check_downloaded_pdf(list):
+    download_files = os.listdir(os.path.expanduser('~/Downloads'))
+    temp =[]
+    for each in download_files:
+        if each == re.findall('\*.pdf', each):
+            temp.append(temp)
+        result = [i for i, j in zip(temp, list) if temp == list]
 def execute_xpath(WebDriver, string):
     """
     Click on passed xpath element
