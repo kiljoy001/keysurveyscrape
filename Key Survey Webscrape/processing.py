@@ -98,13 +98,17 @@ def record_folders():
             file.write('{0}\n'.format(each))
         file.close()
 
+
 def check_downloaded_pdf(list):
     download_files = os.listdir(os.path.expanduser('~/Downloads'))
     temp =[]
     for each in download_files:
         if each == re.findall('\*.pdf', each):
             temp.append(temp)
-        result = [i for i, j in zip(temp, list) if temp == list]
+    result = [i for i, j in zip(temp, list) if temp == list]
+    return result
+
+
 def execute_xpath(WebDriver, string):
     """
     Click on passed xpath element
@@ -117,18 +121,45 @@ def execute_xpath(WebDriver, string):
     element.click()
     return
 
+def compile_surveys():
+    if os.path.isfile('filterednames.txt'):
+        # processing file to get the unique survey numbers
+        with open('filterednames.txt', 'r+') as file:
+            text = file.read()
+            surveylist = []
+            surveydictionary = {}
+            surveyno = re.findall('survey:\d\d\d\d\d\d', text)
+            surveylist.append(surveyno)
+
+            get_unique = set(surveyno)
+            for each in get_unique:
+                search = re.findall('report:\d\d\d\d\d\d, each', text)
+                surveydictionary[each] = surveyno.count(each), search
+        # write out results with key value pairs representing the survey and how many times it shows up in the list
+        file.close()
+        fileout = open('surveys.txt', 'w')
+        for k, v in surveydictionary.items():
+            fileout.write('{0} number:{1}\n'.format(k, v))
+        fileout.close()
+# def csv_reader():
+#     """takes path as string and opens all *.csv files
+#     :return: output to text file
+#     """
+#     download_files = os.listdir(os.path.expanduser('~/Downloads'))
+
+
 # get_unique_surveys()
-config = configFile()
-chrome_path = Options()
-chrome_path.binary_location = config['driverpath']
-driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
-driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
-eleUsername = driver.find_element_by_id("login")
-elePassword = driver.find_element_by_id("password")
-eleUsername.send_keys(config['login'])
-elePassword.send_keys(config['password'])
-driver.find_element_by_id("loginButton").click()
-driver.maximize_window()
-driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
-execute_xpath(driver, "//*[@id='main']")
-record_folders()
+compile_surveys()
+# config = configFile()
+# chrome_path = Options()
+# chrome_path.binary_location = config['driverpath']
+# driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
+# driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
+# eleUsername = driver.find_element_by_id("login")
+# elePassword = driver.find_element_by_id("password")
+# eleUsername.send_keys(config['login'])
+# elePassword.send_keys(config['password'])
+# driver.find_element_by_id("loginButton").click()
+# driver.maximize_window()
+# driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
+# execute_xpath(driver, "//*[@id='main']")
