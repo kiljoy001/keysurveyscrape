@@ -127,19 +127,24 @@ def compile_surveys():
         with open('filterednames.txt', 'r+') as file:
             text = file.read()
             surveylist = []
+
             surveydictionary = {}
             surveyno = re.findall('survey:\d\d\d\d\d\d', text)
             surveylist.append(surveyno)
 
             get_unique = set(surveyno)
             for each in get_unique:
-                search = re.findall('report:\d\d\d\d\d\d, each', text)
-                surveydictionary[each] = surveyno.count(each), search
+                search = re.findall('report:\d\d\d\d\d\d, {0}'.format(each), text) or re.findall('report:-1, {0}'.format(each), text)
+                result = []
+                for found in search:
+                    cleanup = re.findall('report:\d\d\d\d\d\d', found) or re.findall('report:-1', found)
+                    result.append(cleanup[0][7:])
+                surveydictionary[each] = surveyno.count(each), result
         # write out results with key value pairs representing the survey and how many times it shows up in the list
         file.close()
         fileout = open('surveys.txt', 'w')
         for k, v in surveydictionary.items():
-            fileout.write('{0} number:{1}\n'.format(k, v))
+            fileout.write('{0} :: {1}\n'.format(k, v))
         fileout.close()
 # def csv_reader():
 #     """takes path as string and opens all *.csv files
