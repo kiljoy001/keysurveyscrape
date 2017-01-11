@@ -7,6 +7,38 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+
+
+def open_folders():
+    """crawls through keysurvey folder list and opens all folders"""
+    check_jquery()
+    if check_jquery():
+        folderTree = driver.find_elements_by_xpath("//*[@id='treeContainer']/ul//ul//a")
+    check_jquery()
+    if check_jquery():
+        for unit in range(len(folderTree)):
+            check_jquery()
+            if check_jquery():
+                if folderTree[unit].is_displayed() and folderTree[unit].get_attribute("class") == "surveyFolderOpen":
+                    continue
+                else:
+                    ActionChains(driver).move_to_element(folderTree[unit]).click(folderTree[unit]).perform()
+        test = driver.find_elements_by_xpath("//*[@data-rights='16777215']")
+        test2 = driver.find_elements_by_xpath("//*[@data-rights='16711680']")
+        combined = []
+        for stuff in test:
+            combined.append(stuff)
+        for stuff2 in test2:
+            combined.append(stuff2)
+        for each2 in range(len(combined)):
+            check_jquery()
+            if check_jquery():
+                if combined[each2].is_displayed() and combined[each2].get_attribute("class") == "surveyFolderOpen":
+                    continue
+                else:
+                    ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
+
 
 
 def check_jquery():
@@ -188,7 +220,10 @@ def gather_info():
     for unit in range(1, subIndex + 1):
             if check_jquery() and unit > 0:
                 getname = driver.find_element_by_css_selector(css_path.format(unit)).text
-                getreport = driver.find_element_by_css_selector('#reportNameText').text
+                try:
+                    getreport = driver.find_element_by_css_selector('.pre #reportNameText').text
+                except NoSuchElementException:
+                    getreport = driver.find_element_by_css_selector('#infoContainer .pre div').text
                 get_survey_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[1]").text
                 get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
                 temp_storage["{0}_{1)".format(get_report_number, get_survey_number)] = getreport
@@ -224,4 +259,16 @@ driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
 execute_xpath(driver, "//*[@id='main']")
 record_folders()
-
+accum = 1
+loop = True
+global elecontainer
+while loop:
+    open_folders()
+    elecontainer = driver.find_elements_by_css_selector("a[data-rights^='167']")
+    map(lambda: driver.find_elements_by_css_selector("a[data-rights^='167']"), elecontainer)
+    if elecontainer[accum].is_displayed():
+        ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
+        if check_jquery():
+            urlstore = driver.current_url
+            gather_info()
+    accum += 1
