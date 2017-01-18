@@ -225,11 +225,19 @@ def gather_info():
                 except NoSuchElementException:
                     getreport = driver.find_element_by_css_selector('#infoContainer .pre div').text
                 get_survey_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[1]").text
-                get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
-                temp_storage["{0}_{1)".format(get_report_number, get_survey_number)] = getreport
+                try:
+                    get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
+                except NoSuchElementException:
+                    get_report_number = '-1'
+                temp_storage["{0}_{1}".format(get_report_number, get_survey_number)] = getreport
                 driver.find_element_by_css_selector(css_path.format(unit)).click()
     if os.path.isfile('listed_files.txt'):
         with open('listed_files.txt','a+') as file:
+            for k, v in temp_storage.items():
+                file.write("{0}:{1}\n".format(k, v))
+            file.close()
+    else:
+        with open('listed_files.txt', 'a+') as file:
             for k, v in temp_storage.items():
                 file.write("{0}:{1}\n".format(k, v))
             file.close()
