@@ -229,7 +229,10 @@ def gather_info():
                     get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
                 except NoSuchElementException:
                     get_report_number = '-1'
-                temp_storage["{0}_{1}".format(get_report_number, get_survey_number)] = getreport
+                    if get_report_number is not '-1':
+                        temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = getreport
+                    else:
+                        temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = getreport
                 driver.find_element_by_css_selector(css_path.format(unit)).click()
     if os.path.isfile('listed_files.txt'):
         with open('listed_files.txt','a+') as file:
