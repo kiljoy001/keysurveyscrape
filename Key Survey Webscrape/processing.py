@@ -210,6 +210,44 @@ def open_folders():
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
+def check_for_record():
+    """
+    checks if there is a record file, if it exists load number into global accum variable
+    :return:
+    """
+    global accum
+    if accum is 1:
+        if os.path.isfile('record.txt'):
+            with open('record.txt', 'r') as number:
+                accum = int(number.read())
+                number.close()
+            return accum
+    else:
+        pass
+
+
+def record_place():
+    """
+    Records object number to record.txt, to be used on crashes for restarting the script as a place holder.
+    :return:
+    """
+    global accum
+    objnumber = accum
+    if os.path.isfile('record.txt'):
+        with open('record.txt', 'r+') as file:
+            if int(file.read()) < int(accum):
+                file.close()
+                with open('record.txt', 'w+') as f:
+                    f.write(str(objnumber))
+                    f.close()
+            else:
+                print('Files downloaded are greater than the last attempt, record not saved.')
+    else:
+        with open('record.txt', 'w') as file:
+            file.write(str(objnumber))
+            file.close()
+
+
 def gather_info():
     css_path = "#listContainer > ul > li:nth-child({0}) a"
     # nth-child cannot be zero, thus count starts at one and is extended by one to get the last element
@@ -271,15 +309,21 @@ driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").
 execute_xpath(driver, "//*[@id='main']")
 record_folders()
 accum = 1
+check_for_record()
 loop = True
 global elecontainer
-while loop:
-    open_folders()
-    elecontainer = driver.find_elements_by_css_selector("a[data-rights^='167']")
-    map(lambda: driver.find_elements_by_css_selector("a[data-rights^='167']"), elecontainer)
-    if elecontainer[accum].is_displayed():
-        ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
-        if check_jquery():
-            urlstore = driver.current_url
-            gather_info()
-    accum += 1
+try:
+    while loop:
+        open_folders()
+        elecontainer = driver.find_elements_by_css_selector("a[data-rights^='167']")
+        map(lambda: driver.find_elements_by_css_selector("a[data-rights^='167']"), elecontainer)
+        if elecontainer[accum].is_displayed():
+            ActionChains(driver).move_to_element(elecontainer[accum]).click(elecontainer[accum]).perform()
+            if check_jquery():
+                urlstore = driver.current_url
+                gather_info()
+        accum += 1
+except Exception as e:
+    record_place()
+    print("accum is: " + str(accum))
+    print("length of list is ", len(elecontainer))
