@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException
 
 
 def open_folders():
@@ -40,7 +40,6 @@ def open_folders():
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
 
 
-
 def check_jquery():
     """
     Check if jquery is active on page
@@ -53,11 +52,12 @@ def check_jquery():
         result = False
     return result
 
+
 def get_list():
     if os.path.isfile('names.txt'):
         with open('names.txt', 'r+') as file:
             text = file.read()
-            splitedtext =text.split('\n')
+            splitedtext = text.split('\n')
             filtered = set(splitedtext)
             file.close()
         fileout = open('filterednames.txt', 'w')
@@ -94,6 +94,7 @@ def configFile():
     # location of the .yaml file changes with the folder position
     with open(r'config.yaml') as f:
         return yaml.load(f)
+
 
 def record_folders():
     """crawls through folder list, returns list of folders crawled in a list"""
@@ -133,7 +134,7 @@ def record_folders():
 
 def check_downloaded_pdf(list):
     download_files = os.listdir(os.path.expanduser('~/Downloads'))
-    temp =[]
+    temp = []
     for each in download_files:
         if each == re.findall('\*.pdf', each):
             temp.append(temp)
@@ -153,6 +154,7 @@ def execute_xpath(WebDriver, string):
     element.click()
     return
 
+
 def compile_surveys():
     if os.path.isfile('filterednames.txt'):
         # processing file to get the unique survey numbers
@@ -166,7 +168,8 @@ def compile_surveys():
 
             get_unique = set(surveyno)
             for each in get_unique:
-                search = re.findall('report:\d\d\d\d\d\d, {0}'.format(each), text) or re.findall('report:-1, {0}'.format(each), text)
+                search = re.findall('report:\d\d\d\d\d\d, {0}'.format(each), text) or re.findall(
+                    'report:-1, {0}'.format(each), text)
                 result = []
                 for found in search:
                     cleanup = re.findall('report:\d\d\d\d\d\d', found) or re.findall('report:-1', found)
@@ -205,6 +208,7 @@ def open_folders():
             check_jquery()
             if check_jquery():
                 if combined[each2].is_displayed() and combined[each2].get_attribute("class") == "surveyFolderOpen":
+                    # gather_info()
                     continue
                 else:
                     ActionChains(driver).move_to_element(combined[each2]).click(combined[each2]).perform()
@@ -256,33 +260,36 @@ def gather_info():
     check_jquery()
     temp_storage = {}
     for unit in range(1, subIndex + 1):
-            if check_jquery() and unit > 0:
-                getname = driver.find_element_by_css_selector(css_path.format(unit)).text
-                try:
-                    getreport = driver.find_element_by_css_selector('.pre #reportNameText').text
-                except NoSuchElementException:
-                    getreport = driver.find_element_by_css_selector('#infoContainer .pre div').text
-                get_survey_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[1]").text
-                try:
-                    get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
-                except NoSuchElementException:
-                    get_report_number = '-1'
-                    if get_report_number is not '-1':
-                        temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = getreport
-                    else:
-                        temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = getreport
-                driver.find_element_by_css_selector(css_path.format(unit)).click()
+        if check_jquery() and unit > 0:
+            driver.find_element_by_css_selector(css_path.format(unit)).click()
+            try:
+                getreport = driver.find_element_by_css_selector('.pre #reportNameText').text
+                get_report_name = driver.find_element_by_css_selector('#listContainer ul a').text
+            except NoSuchElementException:
+                getreport = driver.find_element_by_css_selector('#infoContainer .pre div').text
+                get_report_name = 'failure'
+            get_survey_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[1]").text
+            try:
+                get_report_number = driver.find_element_by_xpath("//*[@id='infoContainer']/div[2]").text
+            except:
+                get_report_number = '-1'
+            if get_report_number is not '-1':
+                temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = list(getreport
+                                                                                                      ).append(
+                    get_report_name)
+            else:
+                temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = list(getreport).append(
+                    get_report_name)
     if os.path.isfile('listed_files.txt'):
-        with open('listed_files.txt','a+') as file:
+        with open('listed_files.txt', 'a+') as file:
             for k, v in temp_storage.items():
-                file.write("{0}:{1}\n".format(k, v))
+                file.write("{0}:{1},{2}\n".format(k, v[0], v[1]))
             file.close()
     else:
         with open('listed_files.txt', 'a+') as file:
             for k, v in temp_storage.items():
-                file.write("{0}:{1}\n".format(k, v))
+                file.write("{0}:{1},{2}\n".format(k, v[0], v[1]))
             file.close()
-
 
 
 # def csv_reader():
@@ -299,10 +306,14 @@ chrome_path = Options()
 chrome_path.binary_location = config['driverpath']
 driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
-eleUsername = driver.find_element_by_id("login")
-elePassword = driver.find_element_by_id("password")
-eleUsername.send_keys(config['login'])
-elePassword.send_keys(config['password'])
+try:
+    eleUsername = driver.find_element_by_id("login")
+    elePassword = driver.find_element_by_id("password")
+    eleUsername.send_keys(config['login'])
+    elePassword.send_keys(config['password'])
+except UnexpectedAlertPresentException:
+            driver.switch_to.alert.accept()
+
 driver.find_element_by_id("loginButton").click()
 driver.maximize_window()
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
