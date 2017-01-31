@@ -340,11 +340,13 @@ chrome_path = Options()
 chrome_path.binary_location = config['driverpath']
 driver = webdriver.Chrome(executable_path=config['altdriver'], chrome_options=chrome_path)
 driver.get('https://app.keysurvey.com/Member/UserAccount/UserLogin.action')
-eleUsername = driver.find_element_by_id("login")
-elePassword = driver.find_element_by_id("password")
-
-eleUsername.send_keys(config['login'])
-elePassword.send_keys(config['password'])
+try:
+    eleUsername = driver.find_element_by_id("login")
+    elePassword = driver.find_element_by_id("password")
+    eleUsername.send_keys(config['login'])
+    elePassword.send_keys(config['password'])
+except UnexpectedAlertPresentException:
+    driver.switch_to.alert.accept()
 
 driver.find_element_by_id("loginButton").click()
 
