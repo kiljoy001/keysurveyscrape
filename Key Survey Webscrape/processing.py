@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException
+from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
 
 
 def open_folders():
@@ -259,6 +259,7 @@ def gather_info():
     subIndex = len(findSub)
     check_jquery()
     temp_storage = {}
+    report_list = []
     for unit in range(1, subIndex + 1):
         if check_jquery() and unit > 0:
             driver.find_element_by_css_selector(css_path.format(unit)).click()
@@ -274,12 +275,15 @@ def gather_info():
             except:
                 get_report_number = '-1'
             if get_report_number is not '-1':
-                temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = list(getreport
-                                                                                                      ).append(
-                    get_report_name)
+                report_list.clear()
+                report_list.append(getreport)
+                report_list.append(get_report_name)
+                temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = report_list
             else:
-                temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = list(getreport).append(
-                    get_report_name)
+                report_list.clear()
+                report_list.append(getreport)
+                report_list.append(get_report_name)
+                temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = report_list
     if os.path.isfile('listed_files.txt'):
         with open('listed_files.txt', 'a+') as file:
             for k, v in temp_storage.items():
@@ -312,8 +316,9 @@ eleUsername.send_keys(config['login'])
 elePassword.send_keys(config['password'])
 try:
     driver.find_element_by_id("loginButton").click()
-except UnexpectedAlertPresentException:
     driver.switch_to.alert.accept()
+except NoAlertPresentException:
+    pass
 driver.maximize_window()
 
 driver.find_element_by_xpath("//a[@href='/Member/ReportWizard/dashboard.do ']").click()
