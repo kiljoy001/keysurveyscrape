@@ -344,3 +344,6 @@ except Exception as e:
     record_place()
     print("accum is: " + str(accum))
     print("length of list is ", len(elecontainer))
+    print(type(e))
+    print(e.args)
+    print(e)
