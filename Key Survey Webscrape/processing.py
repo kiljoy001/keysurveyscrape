@@ -278,12 +278,12 @@ def gather_info():
                 report_list.clear()
                 report_list.append(getreport)
                 report_list.append(get_report_name)
-                temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = report_list
+                temp_storage["{0}_{1}".format(get_report_number[11:], get_survey_number[11:])] = report_list[:]
             else:
                 report_list.clear()
                 report_list.append(getreport)
                 report_list.append(get_report_name)
-                temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = report_list
+                temp_storage["{0}_{1}".format(get_report_number, get_survey_number[11:])] = report_list[:]
     if os.path.isfile('listed_files.txt'):
         with open('listed_files.txt', 'a+') as file:
             for k, v in temp_storage.items():
