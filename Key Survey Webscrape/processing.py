@@ -7,7 +7,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException, StaleElementReferenceException
+import traceback
 
 
 def open_folders():
@@ -347,3 +348,5 @@ except Exception as e:
     print(type(e))
     print(e.args)
     print(e)
+    if type(e) is StaleElementReferenceException:
+        print(repr(traceback.extract_stack()))
