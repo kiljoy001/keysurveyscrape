@@ -35,17 +35,19 @@ import codecs, chardet
 #                 newFile.close()
 #
 # process("C:\\Users\\User\\Downloads\\")
-files = os.listdir(r'C:\\Users\\User\\Downloads\\')
-for file in files:
-    if '.csv' in file:
-        pattern = re.compile('2013 - 2014')
-        chardetOpen = open(r'C:\Users\User\Downloads\{0}'.format(file), "rb").read()
-        formatDict = chardet.detect(chardetOpen)
-        with open("format.txt", "r+") as newFile:
-            for key, value in formatDict.items():
-                newFile.write("{0}, {1}, {2}\n".format(file, key, value))
-            newFile.close()
-        with codecs.open(os.path.abspath(r'C:\Users\User\Downloads\{0}'.format(file)), "r", "utf8") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                print(row)
+def search_csv():
+    files = os.listdir(r'C:\\Users\\User\\Downloads\\')
+    search = input("Please enter what you are searching for: ")
+    for file in files:
+        if '.csv' in file:
+            with codecs.open(os.path.abspath(r'C:\Users\User\Downloads\{0}'.format(file)), "r", "utf8") as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    for string in row:
+                        result = re.search(search, string)
+                        if result:
+                            print(file)
+                            f.close()
+                            break
+
+search_csv()
