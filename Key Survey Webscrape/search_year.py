@@ -43,11 +43,19 @@ def search_csv():
             with codecs.open(os.path.abspath(r'C:\Users\User\Downloads\{0}'.format(file)), "r", "utf8") as f:
                 reader = csv.reader(f)
                 for row in reader:
-                    for string in row:
-                        result = re.search(search, string)
-                        if result:
-                            print(file)
-                            f.close()
-                            break
+                    if any(search in s for s in row):
+                        print(file)
+                        f.close()
+                        break
 
-search_csv()
+
+def search_pdf():
+    files = os.listdir(r'C:\\Users\\User\\Downloads\\')
+    search = input("Please enter what you are searching for: ")
+    for file in files:
+        if '.pdf' in file and re.search(
+                search, file):
+            print(file)
+
+
+search_pdf()
