@@ -35,9 +35,8 @@ import codecs, chardet
 #                 newFile.close()
 #
 # process("C:\\Users\\User\\Downloads\\")
-def search_csv():
+def search_csv(search):
     files = os.listdir(r'C:\\Users\\User\\Downloads\\')
-    search = input("Please enter what you are searching for: ")
     for file in files:
         if '.csv' in file:
             with codecs.open(os.path.abspath(r'C:\Users\User\Downloads\{0}'.format(file)), "r", "utf8") as f:
@@ -49,13 +48,20 @@ def search_csv():
                         break
 
 
-def search_pdf():
+def search_pdf(search):
     files = os.listdir(r'C:\\Users\\User\\Downloads\\')
-    search = input("Please enter what you are searching for: ")
     for file in files:
         if '.pdf' in file and re.search(
                 search, file):
             print(file)
 
 
-search_pdf()
+files = os.listdir(r'C:\\Users\\User\\Downloads\\')
+with open("listed_files.txt", "r") as listed:
+    memList = listed.read().split("\n")
+    report_dict = {}
+    for each in memList:
+        if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
+            report_dict[each:13] =
+        elif re.search('-1_\d\d\d\d\d\d', each):
+            report_dict[]
