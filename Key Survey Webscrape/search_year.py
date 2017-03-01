@@ -56,12 +56,22 @@ def search_pdf(search):
             print(file)
 
 
-files = os.listdir(r'C:\\Users\\User\\Downloads\\')
-with open("listed_files.txt", "r") as listed:
-    memList = listed.read().split("\n")
-    report_dict = {}
-    for each in memList:
-        if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
-            report_dict[each:13] =
-        elif re.search('-1_\d\d\d\d\d\d', each):
-            report_dict[]
+def process_list():
+    files = os.listdir(r'C:\\Users\\User\\Downloads\\')
+    with open("listed_files.txt", "r") as listed:
+        memList = listed.read().split("\n")
+        report_dict = {}
+        for each in memList:
+            if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
+                report_dict[each[:12]] = each[14:]
+            elif re.search('-1_\d\d\d\d\d\d', each):
+                report_dict[each[:8]] = each[10:]
+        listed.close()
+        for each in files:
+            if '.pdf' in each:
+                if each[6:] in report_dict:
+                    print("True!")
+                else:
+                    print("False! {0}".format(each))
+
+process_list()
