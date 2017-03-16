@@ -1,40 +1,9 @@
 import os
 import re
 import csv
-import codecs, chardet
-# from multiprocessing import Pool
-#
-# pool = Pool()
+import codecs, glob
 
 
-# def process(path):
-#     files = os.listdir(path)
-#     # get half
-#     if len(files) % 2 == 0:
-#         r1 = pool.apply_async(chardet.detect(open(str(path+"{0}".format(files[range(len(files)/2)])), "rb").read()))
-#         r2 = pool.apply_async(chardet.detect(open(str(path + "{0}".format(files[range(0, len(files)/2, len(files)/2)])), "rb")).read())
-#         answer1 = r1.get(timeout=60)
-#         answer2 = r2.get(timeout=60)
-#         if answer1 is not None:
-#             with open("format.txt", "w") as newFile:
-#                 for key, value in answer1.items():
-#                     newFile.write("{0}, {1}\n".format(key, value))
-#                 newFile.close()
-#         if answer2 is not None:
-#             with open("format.txt", "w") as newFile:
-#                 for key, value in answer1.items():
-#                     newFile.write("{0}, {1}\n".format(key, value))
-#                 newFile.close()
-#     else:
-#         get_all = pool.apply_async(chardet.detect(open(str(path + "{0}".format(files[range(len(files))])), "rb").read()))
-#         one_blow = get_all.get(timeout=120)
-#         if one_blow is not None:
-#             with open("format.txt", "w") as newFile:
-#                 for key, value in one_blow.items():
-#                     newFile.write("{0}, {1}\n".format(key, value))
-#                 newFile.close()
-#
-# process("C:\\Users\\User\\Downloads\\")
 def search_csv(search):
     files = os.listdir(r'C:\\Users\\User\\Downloads\\')
     for file in files:
@@ -57,7 +26,7 @@ def search_pdf(search):
 
 
 def process_list():
-    files = os.listdir(r'C:\\Users\\User\\Downloads\\')
+    files = glob.glob(r'C:\\Users\\User\\Downloads\\*.pdf')
     with open("listed_files.txt", "r") as listed:
         memList = listed.read().split("\n")
         report_dict = {}
@@ -66,12 +35,15 @@ def process_list():
                 report_dict[each[:12]] = each[14:]
             elif re.search('-1_\d\d\d\d\d\d', each):
                 report_dict[each[:8]] = each[10:]
+            else:
+                print(each)
         listed.close()
-        for each in files:
-            if '.pdf' in each:
-                if each[6:] in report_dict:
+        for other in files:
+            other = os.path.basename(other)
+            if '.pdf' in other:
+                if other[7:-4] in report_dict:
                     print("True!")
                 else:
-                    print("False! {0}".format(each))
+                    print("False! {0}".format(other))
 
 process_list()
