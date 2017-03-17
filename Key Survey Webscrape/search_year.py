@@ -31,19 +31,31 @@ def process_list():
         memList = listed.read().split("\n")
         report_dict = {}
         for each in memList:
-            if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
-                report_dict[each[:12]] = each[14:]
-            elif re.search('-1_\d\d\d\d\d\d', each):
-                report_dict[each[:8]] = each[10:]
+            if re.search('\d+_\d+', each):
+                if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
+                    report_dict[each[:13]] = each[14:]
+                elif re.search('-1_\d+', each):
+                    try:
+                        report_dict[each[:9]] = each[10:]
+                    except:
+                        print("something wrong here")
+                else:
+                    print(each)
             else:
                 print(each)
         listed.close()
-        for other in files:
-            other = os.path.basename(other)
-            if '.pdf' in other:
-                if other[7:-4] in report_dict:
-                    print("True!")
-                else:
-                    print("False! {0}".format(other))
+        count = 0
+        for key, value in report_dict.items():
+            pattern = re.compile("\d\d\d\d\d\d_\d\d\d\d\d\d")
+            if pattern.match(key):
+                count += 1
+        print(count)
+        # for other in files:
+        #     other = os.path.basename(other)
+        #     if '.pdf' in other:
+        #         if other[7:-4] in report_dict:
+        #             print("True!")
+        #         else:
+        #             print("False! {0}".format(other))
 
 process_list()
