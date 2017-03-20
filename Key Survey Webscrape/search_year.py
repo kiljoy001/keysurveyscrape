@@ -30,7 +30,8 @@ def process_list():
     with open("listed_files.txt", "r") as listed:
         memList = listed.read().split("\n")
         report_dict = {}
-        for each in memList:
+        cleanup = set(memList)
+        for each in cleanup:
             if re.search('\d+_\d+', each):
                 if re.search('\d\d\d\d\d\d_\d\d\d\d\d\d', each):
                     report_dict[each[:13]] = each[14:]
@@ -44,18 +45,23 @@ def process_list():
             else:
                 print(each)
         listed.close()
-        count = 0
+        count_full = 0
+        count_neg =0
         for key, value in report_dict.items():
             pattern = re.compile("\d\d\d\d\d\d_\d\d\d\d\d\d")
             if pattern.match(key):
-                count += 1
-        print(count)
-        # for other in files:
-        #     other = os.path.basename(other)
-        #     if '.pdf' in other:
-        #         if other[7:-4] in report_dict:
-        #             print("True!")
-        #         else:
-        #             print("False! {0}".format(other))
+                count_full += 1
+            pattern2 = re.compile("-1_\d+")
+            if pattern2.match(key):
+                count_neg +=1
+        print("full {0}".format(count_full))
+        print("neg {0}".format(count_neg))
+        for other in files:
+            other = os.path.basename(other)
+            if '.pdf' in other:
+                if other[7:-4] in report_dict:
+                    print("True!")
+                else:
+                    print("False! {0}".format(other))
 
 process_list()
