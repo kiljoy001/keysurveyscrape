@@ -1,7 +1,7 @@
 import os
 import re
 import csv
-import codecs, glob
+import codecs, glob, shutil, traceback
 
 
 def search_csv(search):
@@ -30,6 +30,8 @@ def process_list():
     with open("listed_files.txt", "r") as listed:
         memList = listed.read().split("\n")
         report_dict = {}
+        for all_items in memList:
+            all_items.strip()
         cleanup = set(memList)
         for each in cleanup:
             if re.search('\d+_\d+', each):
@@ -46,22 +48,28 @@ def process_list():
                 print(each)
         listed.close()
         count_full = 0
-        count_neg =0
+        count_neg = 0
         for key, value in report_dict.items():
             pattern = re.compile("\d\d\d\d\d\d_\d\d\d\d\d\d")
             if pattern.match(key):
                 count_full += 1
             pattern2 = re.compile("-1_\d+")
             if pattern2.match(key):
-                count_neg +=1
+                count_neg += 1
         print("full {0}".format(count_full))
         print("neg {0}".format(count_neg))
         for other in files:
             other = os.path.basename(other)
-            if '.pdf' in other:
-                if other[7:-4] in report_dict:
-                    print("True!")
-                else:
-                    print("False! {0}".format(other))
+            if '.pdf' in other and other[7:-4] in report_dict:
+                try:
+                    print(os.path.join("C:\\", "Users", "User", "Downloads", other))
+                    shutil.move(os.path.join("C:\\", "Users", "User", "Downloads", other),
+                                os.path.join("C:\\", "Users", "User", "Downloads", report_dict[other[7:-4]] + ".pdf"))
+                except FileNotFoundError as error:
+                    print("not found error: {0}\n{1}".format(other, report_dict[other[7:-4]]), traceback.format_exc())
+
+            #else:
+                #   print("False! {0}".format(other))
+
 
 process_list()
